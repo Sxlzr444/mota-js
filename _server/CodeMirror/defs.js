@@ -3706,7 +3706,7 @@ var terndefs_f6783a0a_522d_417e_8407_94c67b692e50 = [
         },
         "getDamageInfo": {
           "!doc": "获得战斗伤害信息<br/>例如：core.getDamage('greenSlime',0,0,'MT0') // 绿头怪的总伤害<br/>enemy: 敌人id或敌人对象<br/>hero: 可选，此时的勇士属性<br/>x: 敌人的横坐标，可选<br/>y: 敌人的纵坐标，可选<br/>floorId: 敌人所在的地图，可选<br/>返回值：伤害计算信息，如果因为没有破防或无敌怪等其他原因无法战斗，则返回null",
-          "!type": "fn(enemy: string|enemy, hero?: ?, x?: number, y?: number, floorId?: string) -> {damage: number, per_damage: number, hero_per_damage: number, init_damage: number, mon_hp: number, mon_atk: number, mon_def: number, turn: number}"
+          "!type": "fn(enemy: string|enemy, hero?: ?, x?: number, y?: number, floorId?: string) -> {damage: number, heroDealtOfThisTurn: number, heroDealOfThisTurn: number, initDealt: number, mon_hp: number, mon_atk: number, mon_def: number, turn: number}"
         },
         "getDamage": {
           "!doc": "获得某只敌人对主角的总伤害<br/>例如：core.getDamage('greenSlime',0,0,'MT0') // 绿头怪的总伤害<br/>enemy: 敌人id或敌人对象<br/>x: 敌人的横坐标，可选<br/>y: 敌人的纵坐标，可选<br/>floorId: 敌人所在的地图，可选<br/>返回值：总伤害，如果因为没有破防或无敌怪等其他原因无法战斗，则返回null",

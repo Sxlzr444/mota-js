@@ -129,7 +129,7 @@
 		if (enemy.add) // 如果加到自身
 			mon_hp += vampire_damage;
 
-		init_damage += vampire_damage;
+		initDealt += vampire_damage;
 	}
     ```
     ```js

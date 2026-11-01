@@ -1548,9 +1548,9 @@ declare class enemys {
         mon_hp: number
         mon_atk: number
         mon_def: number
-        init_damage: number
-        per_damage: number
-        hero_per_damage: number
+        initDealt: number
+        heroDealtOfThisTurn: number
+        heroDealOfThisTurn: number
         turn: number
         damage: number
         [x: string]: any

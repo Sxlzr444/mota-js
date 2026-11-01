@@ -1139,6 +1139,9 @@ control.prototype.checkBlock = function () {
             core.updateStatusBar(false, true);
         }
     }
+    // 先结算扣税技能，以处理扣税致死的情况。checkTax返回false表示无法缴税，玩家已死亡，不再结算阻击和领域；返回true之后再结算阻击和领域。
+    if (this.controldata.checkTax &&
+        !this.controldata.checkTax((core.status.checkBlock.tax || {})[loc])) return;
     this._checkBlock_ambush(core.status.checkBlock.ambush[loc]);
     this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
 }
@@ -1251,7 +1254,21 @@ control.prototype._updateDamage_extraDamage = function (floorId, onMap) {
                 if (core.flags.extraDamageType == 2) alpha = 0;
                 else if (core.flags.extraDamageType == 1) alpha = 0.6;
             }
-            var damage = core.status.checkBlock.damage[x + "," + y] || 0;
+            var loc = x + "," + y,
+                damage = core.status.checkBlock.damage[loc] || 0,
+                tax = core.status.checkBlock.tax && core.status.checkBlock.tax[loc];
+            if (tax && tax.length > 0) {
+                var amount = tax.reduce(function (total, item) {
+                    return total + item[4];
+                }, 0);
+                core.status.damage.extraData.push({
+                    text: "-" + core.formatBigNumber(amount, true),
+                    px: 32 * x + 16,
+                    py: 32 * (y + 1) - (damage > 0 || core.status.checkBlock.ambush[loc] ? 25 : 14),
+                    color: '#ffdd55',
+                    alpha: alpha
+                });
+            }
             if (damage > 0) { // 该点伤害
                 damage = core.formatBigNumber(damage, true);
                 core.status.damage.extraData.push({ text: damage, px: 32 * x + 16, py: 32 * (y + 1) - 14, color: '#ffaa33', alpha: alpha });

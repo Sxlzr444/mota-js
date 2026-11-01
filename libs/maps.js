@@ -805,7 +805,8 @@ maps.prototype._canMoveDirectly_checkGlobal = function () {
 }
 
 maps.prototype._canMoveDirectly_checkStartPoint = function (sx, sy) {
-    if (core.status.checkBlock.damage[sx + "," + sy]) return false;
+    var index = sx + "," + sy;
+    if (core.status.checkBlock.damage[index] || core.status.checkBlock.tax[index]) return false; //新增了扣税判断。
     var block = core.getBlock(sx, sy);
     if (block != null) {
         // 只有起点是传送点才是能无视
@@ -874,6 +875,8 @@ maps.prototype._canMoveDirectly_checkNextPoint = function (blocksObj, x, y) {
     // 是否存在阻激夹域伤害
     if (core.status.checkBlock.damage[index]) return false;
     if (core.status.checkBlock.repulse[index]) return false;
+    // 是否存在扣税
+    if (core.status.checkBlock.tax[index]) return false;
     // 是否存在捕捉
     if (core.status.checkBlock.ambush[index]) return false;
 

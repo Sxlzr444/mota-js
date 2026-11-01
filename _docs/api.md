@@ -768,7 +768,7 @@ y: 敌人的纵坐标，可选
 floorId: 敌人所在的地图，可选
 返回值：总伤害，如果因为没有破防或无敌怪等其他原因无法战斗，则返回null
 
-getDamageInfo: fn(enemy: string|enemy, hero?: ?, x?: number, y?: number, floorId?: string) -> {damage: number, per_damage: number, hero_per_damage: number, init_damage: number, mon_hp: number, mon_atk: number, mon_def: number, turn: number}
+getDamageInfo: fn(enemy: string|enemy, hero?: ?, x?: number, y?: number, floorId?: string) -> {damage: number, heroDealtOfThisTurn: number, heroDealOfThisTurn: number, initDealt: number, mon_hp: number, mon_atk: number, mon_def: number, turn: number}
 获得战斗伤害信息
 例如：core.getDamage('greenSlime',0,0,'MT0') // 绿头怪的总伤害
 enemy: 敌人id或敌人对象

@@ -66,7 +66,7 @@ function (enemy, hero, x, y, floorId) {
 		return null; // 不可战斗
 
 	// 战前造成的额外伤害（可被护盾抵消）
-	var init_damage = 0;
+	var initDealt = 0;
 
 	// 吸血
 	if (core.hasSpecial(mon_special, 11)) {
@@ -81,33 +81,33 @@ function (enemy, hero, x, y, floorId) {
 		if (enemy.add) // 如果加到自身
 			mon_hp += vampire_damage;
 
-		init_damage += vampire_damage;
+		initDealt += vampire_damage;
 	}
 
 	// 每回合怪物对勇士造成的战斗伤害
-	var per_damage = mon_atk - hero_def;
+	var heroDealtOfThisTurn = mon_atk - hero_def;
 	// 魔攻：战斗伤害就是怪物攻击力
-	if (core.hasSpecial(mon_special, 2)) per_damage = mon_atk;
+	if (core.hasSpecial(mon_special, 2)) heroDealtOfThisTurn = mon_atk;
 	// 穿刺（编号32）：无视角色70%防御力。
-	if (core.hasSpecial(mon_special, 32)) per_damage = Math.floor(mon_atk - 0.3 * hero_def);
+	if (core.hasSpecial(mon_special, 32)) heroDealtOfThisTurn = Math.floor(mon_atk - 0.3 * hero_def);
 	// 战斗伤害不能为负值
-	if (per_damage < 0) per_damage = 0;
+	if (heroDealtOfThisTurn < 0) heroDealtOfThisTurn = 0;
 	
 	// 中子束（编号34）：每回合普攻两次，魔攻一次。
 	if (core.hasSpecial(mon_special, 34)) {
-		per_damage *= 2;
-		per_damage += mon_atk;
+		heroDealtOfThisTurn *= 2;
+		heroDealtOfThisTurn += mon_atk;
 	}
 	
 	// 崩甲（编号38）：怪物每回合附加勇士战斗开始时的护盾数值的0.1倍作为伤害。
 	if (core.hasSpecial(mon_special, 38)) {
-		per_damage += Math.floor(hero_mdef * 0.1);
+		heroDealtOfThisTurn += Math.floor(hero_mdef * 0.1);
 	}
 
 	// 2连击 & 3连击 & N连击
-	if (core.hasSpecial(mon_special, 4)) per_damage *= 2;
-	if (core.hasSpecial(mon_special, 5)) per_damage *= 3;
-	if (core.hasSpecial(mon_special, 6)) per_damage *= (enemy.n || 4);
+	if (core.hasSpecial(mon_special, 4)) heroDealtOfThisTurn *= 2;
+	if (core.hasSpecial(mon_special, 5)) heroDealtOfThisTurn *= 3;
+	if (core.hasSpecial(mon_special, 6)) heroDealtOfThisTurn *= (enemy.n || 4);
 
 	// 每回合的反击伤害；反击是按照勇士的攻击次数来计算回合
 	var counterDamage = 0;
@@ -115,59 +115,59 @@ function (enemy, hero, x, y, floorId) {
 		counterDamage += Math.floor((enemy.atkValue || core.values.counterAttack) * hero_atk);
 
 	// 先攻
-	if (core.hasSpecial(mon_special, 1)) init_damage += per_damage;
+	if (core.hasSpecial(mon_special, 1)) initDealt += heroDealtOfThisTurn;
 
 	// 破甲
 	if (core.hasSpecial(mon_special, 7))
-		init_damage += Math.floor((enemy.defValue || core.values.breakArmor) * hero_def);
+		initDealt += Math.floor((enemy.defValue || core.values.breakArmor) * hero_def);
 
 	// 净化
 	if (core.hasSpecial(mon_special, 9))
-		init_damage += Math.floor((enemy.n || core.values.purify) * hero_mdef);
+		initDealt += Math.floor((enemy.n || core.values.purify) * hero_mdef);
 	
 	// 冰冻（编号33）：怪物首先冰冻角色3回合，冰冻期间每回合额外造成角色护盾的20%伤害。
 	if (core.hasSpecial(mon_special, 33)) {
-		init_damage += Math.floor(3 * (per_damage + 0.2 * hero_mdef));
+		initDealt += Math.floor(3 * (heroDealtOfThisTurn + 0.2 * hero_mdef));
 	}
 
 	// 勇士每回合对怪物造成的伤害
-	var hero_per_damage = Math.max(hero_atk - mon_def, 0);
+	var heroDealOfThisTurn = Math.max(hero_atk - mon_def, 0);
 	
 	// 技能2：角色每回合造成和受到的伤害均提升`flag:x2`%。（如，`flag:x2`为10时，每回合造成和受到伤害都提升10%）
 	if (core.getFlag("skill", 0) == 2) {
-		per_damage += Math.floor(per_damage * core.getFlag('x2', 0) / 100);
-		hero_per_damage += Math.floor(hero_per_damage * core.getFlag('x2', 0) / 100);
+		heroDealtOfThisTurn += Math.floor(heroDealtOfThisTurn * core.getFlag('x2', 0) / 100);
+		heroDealOfThisTurn += Math.floor(heroDealOfThisTurn * core.getFlag('x2', 0) / 100);
 	}
 	
 	// 闪避（编号31）：受到伤害降低40%。
 	if (core.hasSpecial(mon_special, 31)) {
-		hero_per_damage = Math.floor(hero_per_damage * 0.6);
+		heroDealOfThisTurn = Math.floor(heroDealOfThisTurn * 0.6);
 	}
 	
 	// 如果没有破防，则不可战斗
-	if (hero_per_damage <= 0) return null;
+	if (heroDealOfThisTurn <= 0) return null;
 	
 	// 技能5：角色额外抢攻`flag:x5`回合。
 	if (core.getFlag("skill", 0) == 5) {
-		mon_hp -= core.getFlag('x5', 0) * hero_per_damage;
+		mon_hp -= core.getFlag('x5', 0) * heroDealOfThisTurn;
 		// 判定是否已经秒杀 -> 注意mon_hp不能小于等于0否则回合计算会出问题
 		if (mon_hp <= 0) mon_hp = 1;
 	}
 	
 	// 暗影庇护（编号41）：处于无敌状态，但每回合损耗自身2%的最大生命值。
 	if (core.hasSpecial(mon_special, 41)) {
-		hero_per_damage = Math.floor(mon_hp * 0.02);
+		heroDealOfThisTurn = Math.floor(mon_hp * 0.02);
 	}
 	
 	// 强击（编号40）：怪物第一回合三倍攻击。
 	// 注意：需要判定角色是否秒杀怪物
-	if (core.hasSpecial(mon_special, 40) && hero_per_damage < mon_hp) {
-		init_damage += 2 * mon_atk;
+	if (core.hasSpecial(mon_special, 40) && heroDealOfThisTurn < mon_hp) {
+		initDealt += 2 * mon_atk;
 	}
 
 	
 	// 勇士的攻击回合数；为怪物生命除以每回合伤害向上取整
-	var turn = Math.ceil(mon_hp / hero_per_damage);
+	var turn = Math.ceil(mon_hp / heroDealOfThisTurn);
 
 	// ------ 支援 ----- //
 	// 这个递归最好想明白为什么，flag:__extraTurn__是怎么用的
@@ -192,7 +192,7 @@ function (enemy, hero, x, y, floorId) {
 			}
 			// 已经进行的回合数
 			core.setFlag("__extraTurn__", info.turn);
-			init_damage += info.damage;
+			initDealt += info.damage;
 		}
 		if (guard_before_current_enemy) { // --- 先打支援怪物，增加当前回合数
 			turn += core.getFlag("__extraTurn__", 0);
@@ -202,7 +202,7 @@ function (enemy, hero, x, y, floorId) {
 	// ------ 支援END ------ //
 
 	// 最终伤害：初始伤害 + 怪物对勇士造成的伤害 + 反击伤害
-	var damage = init_damage + (turn - 1) * per_damage + turn * counterDamage;
+	var damage = initDealt + (turn - 1) * heroDealtOfThisTurn + turn * counterDamage;
 	// 再扣去护盾
 	damage -= hero_mdef;
 	
@@ -234,9 +234,9 @@ function (enemy, hero, x, y, floorId) {
 		"mon_hp": Math.floor(mon_hp),
 		"mon_atk": Math.floor(mon_atk),
 		"mon_def": Math.floor(mon_def),
-		"init_damage": Math.floor(init_damage),
-		"per_damage": Math.floor(per_damage),
-		"hero_per_damage": Math.floor(hero_per_damage),
+		"initDealt": Math.floor(initDealt),
+		"heroDealtOfThisTurn": Math.floor(heroDealtOfThisTurn),
+		"heroDealOfThisTurn": Math.floor(heroDealOfThisTurn),
 		"turn": Math.floor(turn),
 		"damage": Math.floor(damage)
 	};

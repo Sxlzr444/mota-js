@@ -2279,7 +2279,7 @@ ui.prototype._drawBook_drawRow1 = function (index, enemy, top, left, width, posi
     var b13 = this._buildFont(13, true), f13 = this._buildFont(13, false);
     var col1 = left, col2 = left + width * 9 / 25, col3 = left + width * 17 / 25;
     core.fillText('ui', core.getStatusLabel('hp'), col1, position, '#DDDDDD', f13);
-    core.fillText('ui', core.formatBigNumber(enemy.hp || 0), col1 + 30, position, null, b13);
+    core.fillText('ui', core.formatBigNumber(enemy.nextHp != null ? enemy.nextHp : (enemy.hp || 0)), col1 + 30, position, null, b13);
     core.fillText('ui', core.getStatusLabel('atk'), col2, position, null, f13);
     core.fillText('ui', core.formatBigNumber(enemy.atk || 0), col2 + 30, position, null, b13);
     core.fillText('ui', core.getStatusLabel('def'), col3, position, null, f13);

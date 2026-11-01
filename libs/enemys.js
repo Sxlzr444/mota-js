@@ -440,8 +440,9 @@ enemys.prototype._getCurrentEnemys_addEnemy = function (enemyId, enemys, used, x
     var enemyInfo = this.getEnemyInfo(enemy, null, null, null, floorId);
     var locEnemyInfo = this.getEnemyInfo(enemy, null, x, y, floorId);
 
-    if (!core.flags.enableEnemyPoint ||
-        (locEnemyInfo.atk == enemyInfo.atk && locEnemyInfo.def == enemyInfo.def && locEnemyInfo.hp == enemyInfo.hp)) {
+    if (locEnemyInfo.nextHp == null &&
+        (!core.flags.enableEnemyPoint ||
+            (locEnemyInfo.atk == enemyInfo.atk && locEnemyInfo.def == enemyInfo.def && locEnemyInfo.hp == enemyInfo.hp))) {
         x = null;
         y = null;
     } else {
@@ -449,7 +450,8 @@ enemys.prototype._getCurrentEnemys_addEnemy = function (enemyId, enemys, used, x
         for (var i = 0; i < enemys.length; ++i) {
             var one = enemys[i];
             if (id == one.id && one.locs != null &&
-                locEnemyInfo.atk == one.atk && locEnemyInfo.def == one.def && locEnemyInfo.hp == one.hp) {
+                locEnemyInfo.atk == one.atk && locEnemyInfo.def == one.def && locEnemyInfo.hp == one.hp &&
+                locEnemyInfo.nextHp == one.nextHp) {
                 one.locs.push([x, y]);
                 return;
             }
