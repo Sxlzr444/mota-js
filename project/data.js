@@ -5,7 +5,8 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"sample0",
 			"sample1",
 			"sample2",
-			"MT0"
+			"MT0",
+			"MT1"
 		],
 		"floorPartitions": [],
 		"images": [
@@ -166,7 +167,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"title": "魔塔样板",
 		"name": "template",
 		"version": "Ver 2.10.3",
-		"floorId": "sample0",
+		"floorId": "MT1",
 		"hero": {
 			"image": "hero.png",
 			"animate": false,
@@ -190,7 +191,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"loc": {
 				"direction": "up",
 				"x": 6,
-				"y": 10
+				"y": 12
 			},
 			"flags": {},
 			"followers": [],

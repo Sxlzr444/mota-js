@@ -359,7 +359,25 @@ var comment_c456ea59_6018_45ef_8bcc_211a24c627dc = {
 					"_event": "afterBattle",
 					"_docs": "战后事件",
 					"_data": "和该怪物战斗后触发的事件列表"
-				}
+				},
+				"hissValue": {
+    				"_leaf": true,
+    				"_type": "textarea",
+    				"_docs": "哈气伤害",
+    				"_data": "哈气技能对经过周围的玩家造成的伤害。"
+				},
+				"costValueForMultiStrikes": {
+    				"_leaf": true,
+    				"_type": "textarea",
+    			"_docs": "额外攻击代价",
+    			"_data": "争先技能每增加一次攻击，所有攻击伤害降低的数值。未设置时此技能不生效，且会显示错误。"
+				},
+				"tax": {
+   				"_leaf": true,
+    			"_type": "textarea",
+    			"_docs": "扣税金额",
+    			"_data": "扣税技能经过时缴纳的金币数；未设置时按 10 处理。"
+				},
 			}
 		},
 		"enemys_template": { 'name': '新敌人', 'hp': 0, 'atk': 0, 'def': 0, 'money': 0, 'exp': 0, 'point': 0, 'special': [] },

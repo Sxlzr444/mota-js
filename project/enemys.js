@@ -77,7 +77,7 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"keiskeiFairy": {"name":"铃兰花妖","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"tulipFairy": {"name":"郁金香花妖","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"purpleBowman": {"name":"高级弓兵","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
-	"bearDown": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"},"bigImage":"bear.png"},
+	"bearDown": {"name":"神人·石狩野人","hp":380,"atk":135,"def":75,"money":0,"exp":0,"point":0,"special":[1,5001,5002],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"},"bigImage":"bear.png","costValueForMultiStrikes":10},
 	"bearLeft": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
 	"bearRight": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
 	"bearUp": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}}
