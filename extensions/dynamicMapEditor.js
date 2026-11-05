@@ -116,9 +116,10 @@ dynamicMapEditor.prototype.onMapClick = function(x, y) {
 }
 
 dynamicMapEditor.prototype.getClickLoc = function (e) {
+	var rect = this.dom.getBoundingClientRect();
 	return {
-		x: (e.clientX - core.dom.gameGroup.offsetLeft - 3) / core.domStyle.scale,
-		y: (e.clientY - core.dom.gameGroup.offsetTop - 3) / core.domStyle.scale,
+		x: (e.clientX - rect.left) * this.dom.width / rect.width,
+		y: (e.clientY - rect.top) * this.dom.height / rect.height,
 	};
 }
 
@@ -150,7 +151,8 @@ dynamicMapEditor.prototype.onItemClick = function(index) {
 	if(index == this.selectedIndex) {
 		if (core.material.enemys[item.id]) {
 			var enemy = core.material.enemys[item.id];
-			var nowData = [enemy.hp, enemy.atk, enemy.def, enemy.special].join(';');
+			var baseEnemy = core.enemys.enemys[this._getBaseEnemyId(item.id)];
+			var nowData = [baseEnemy.hp, baseEnemy.atk, baseEnemy.def, baseEnemy.special].join(';');
 			core.myprompt("请输入新怪物属性\n血;攻;防;能力，以分号分隔", nowData, function (result) {
 				if (result) {
 					try {
@@ -193,6 +195,29 @@ dynamicMapEditor.prototype.onItemClick = function(index) {
 
 // ------ methods
 
+dynamicMapEditor.prototype._getBaseEnemyId = function (enemyId) {
+	var enemy = core.enemys.enemys[enemyId];
+	if (enemy && enemy.faceIds && core.enemys.enemys[enemy.faceIds.down]) return enemy.faceIds.down;
+	return enemyId;
+}
+
+dynamicMapEditor.prototype._hasEnemyInfoOverride = function (enemyId, name) {
+	var enemyInfo = core.getFlag('enemyInfo') || {};
+	for (var id in core.enemys.enemys) {
+		if (this._getBaseEnemyId(id) == enemyId && enemyInfo[id] &&
+			Object.prototype.hasOwnProperty.call(enemyInfo[id], name)) return true;
+	}
+	return false;
+}
+
+dynamicMapEditor.prototype._setEnemyProperty = function (enemyId, name, value) {
+	var baseId = this._getBaseEnemyId(enemyId);
+	core.enemys.enemys[baseId][name] = core.clone(value);
+	if (!this._hasEnemyInfoOverride(baseId, name) && core.material.enemys[baseId]) {
+		core.material.enemys[baseId][name] = core.clone(value);
+	}
+}
+
 dynamicMapEditor.prototype.openToolBox = function() {
 	if (!this.isUsingTool && core.domStyle.isVertical) {
 		core.drawTip("竖屏模式下暂不支持此功能。");
@@ -225,20 +250,20 @@ dynamicMapEditor.prototype.addOperation = function() {
 		core.setBlock(operation.number, operation.x, operation.y, operation.floorId);
 		this.mapRecord[operation.floorId] = true;
 	} else if (type == 'modify') {
-		operation.enemyId = arguments[1];
+		operation.enemyId = this._getBaseEnemyId(arguments[1]);
 		operation.hp = arguments[2];
 		operation.atk = arguments[3];
 		operation.def = arguments[4];
 		operation.special = arguments[5];
-		var enemy = core.material.enemys[operation.enemyId];
+		var enemy = core.enemys.enemys[operation.enemyId];
 		operation.originHp = enemy.hp;
 		operation.originAtk = enemy.atk;
 		operation.originDef = enemy.def;
-		operation.originSpecial = enemy.special;
-		enemy.hp = operation.hp;
-		enemy.atk = operation.atk;
-		enemy.def = operation.def;
-		enemy.special = operation.special;
+		operation.originSpecial = core.clone(enemy.special);
+		this._setEnemyProperty(operation.enemyId, 'hp', operation.hp);
+		this._setEnemyProperty(operation.enemyId, 'atk', operation.atk);
+		this._setEnemyProperty(operation.enemyId, 'def', operation.def);
+		this._setEnemyProperty(operation.enemyId, 'special', operation.special);
 		this.enemyModified = true;
 	} else if (type == 'value') {
 		operation.id = arguments[1];
@@ -274,10 +299,10 @@ dynamicMapEditor.prototype.undo = function() {
 		var def = operation.originDef;
 		var special = operation.originSpecial;
 		var enemy = core.material.enemys[enemyId];
-		enemy.hp = hp;
-		enemy.atk = atk;
-		enemy.def = def;
-		enemy.special = special;
+		this._setEnemyProperty(enemyId, 'hp', hp);
+		this._setEnemyProperty(enemyId, 'atk', atk);
+		this._setEnemyProperty(enemyId, 'def', def);
+		this._setEnemyProperty(enemyId, 'special', special);
 		core.drawTip('已撤销对' + enemy.name + '的属性修改');
 		this.enemyModified = true;
 	} else if (type == 'value') { // {id, value, originValue}
@@ -419,7 +444,6 @@ dynamicMapEditor.prototype.applyCurrentChange = function() {
 
 dynamicMapEditor.prototype.saveEnemys = function () {
 	if (!this.enemyModified) return;
-	core.enemys.enemys = core.clone(core.material.enemys);
 	var datastr = 'var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 = \n';
 	var emap = {};
 	var estr = JSON.stringify(core.enemys.enemys, function (k, v) {
