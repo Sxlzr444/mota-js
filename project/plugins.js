@@ -6,6 +6,133 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 本函数将在所有资源加载完毕后，游戏开启前被执行
 		}
 	},
+
+	"bleed": function () {
+
+		/**
+		 * 一条流血效果的记录
+		 * @typedef {Object} bleedLog
+		 * @property {number} turns		剩余回合数
+		 * @property {number} HpPoints  每回合让玩家受到的伤害
+		 */
+
+		/** 内部专用：取得（并在必要时初始化）真正存放在 hero 上的流血记录数组，外部无法调用 
+		 * @returns {bleedLog[]}
+		*/
+		let getLogs = function () {
+			if (!core.status || !core.status.hero) return [];
+			let logs = core.status.hero.bleed;
+			if (!Array.isArray(logs)) {
+				logs = [];
+				core.status.hero.bleed = logs;
+			}
+			return logs;
+		};
+		/** 内部专用：写回 hero 上的流血记录数组，外部无法调用 
+		 * @param {bleedLog[]} v 写入的流血记录
+		 * @returns {boolean} 写入是否成功
+		*/
+		let setLogs = function (v) {
+			if (!core.status || !core.status.hero) return false;
+			core.status.hero.bleed = Array.isArray(v) ? v : [];
+			return true;
+		};
+		/** 只读属性被赋值时的统一提示，不中断程序 
+		 * @returns {void} 
+		*/
+		let readonlyWarn = function () {
+			console.warn("此属性只读，无法直接设置，请使用内置的方法操作");
+		};
+		this.bleed = {
+			/**
+			 * 记录所有当前生效的流血效果  
+			 * 这里返回只读快照，请通过内置方法修改
+			 * @type {bleedLog[]}
+			 */
+			get logs() {
+				return getLogs().map(function (log) {
+					return { turns: log.turns, HpPoints: log.HpPoints };
+				});
+			},
+			/** 只读，请通过给出的外部方法修改 */
+			set logs(v) {
+				readonlyWarn();
+			},
+
+			/** @returns {boolean}	玩家当前是否处于流血状态 */
+			"isBleeding": function() {
+				return getLogs().length > 0;
+			},
+
+			/** 流血效果的剩余回合数  
+			 * @returns {number}	当前所有生效的流血效果中，剩余回合数最长的那个，即为流血效果的剩余回合数
+			 */
+			get turnsLeft() {
+				if (this.isBleeding() !== true) return 0;
+				return Math.max(...getLogs().map(log => log.turns));
+			},
+			/** 只读，仅给出提示 */
+			set turnsLeft(v) {
+				readonlyWarn();
+			},
+
+			/** 下一回合中玩家将受到的流血效果之总伤害
+			 * @returns {number}	当前所有生效的流血效果中，每回合造成的伤害之总和，即为下一回合中玩家将受到的流血效果之总伤害
+			 */
+			get nextTurnDealt() {
+				if (this.isBleeding() !== true) return 0;
+				let j = 0;
+				let sum = 0;
+				let logs = getLogs();
+				while (j<logs.length) {
+					sum += logs[j].HpPoints;
+					j += 1;
+				}
+				return sum;
+			},
+			/** 只读，仅给出提示 */
+			set nextTurnDealt(v) {
+				readonlyWarn();
+			},
+			
+			/**
+			 * 令当前所有生效的流血效果减少一回合持续时间  
+			 * 并清除所有持续回合数等于 0 的流血效果记录
+			 * @returns {void}
+			 */
+			"reduceOneTurn": function() {
+				if (this.isBleeding() !== true) {
+					return;
+				}
+				let j = 0;
+				let logs = getLogs();
+				while (j<logs.length) {
+					logs[j].turns -= 1;
+					j += 1;
+				}
+				setLogs(logs.filter(log => log.turns > 0));
+			},
+			/**
+			 * 添加一条流血效果  
+			 * @param {number} thisTurns	该流血效果持续的回合数，必须是大于 0 的整数，或 Infinity（永久生效）
+			 * @param {number} thisHpPoints	该流血效果每回合造成的伤害，必须是大于 0 的有限数值，允许小数，不允许 Infinity
+			 * @returns {boolean} 添加是否成功，不成功则添加无效
+			 */
+			"add": function (thisTurns, thisHpPoints) {
+				// 两个参数都必须是 number；回合数允许正整数或 Infinity，伤害必须是正的有限数
+				let isTurnsValid = typeof thisTurns === 'number' && thisTurns > 0
+					&& (Number.isInteger(thisTurns) || thisTurns === Infinity);
+				let isHpPointsValid = typeof thisHpPoints === 'number'
+					&& Number.isFinite(thisHpPoints) && thisHpPoints > 0;
+				if (!isTurnsValid || !isHpPointsValid) {
+					console.warn("回合数 thisTurns 和每回合流血伤害 thisHpPoints 并非都是合法数值，设置无效。");
+					return false;
+				}
+				return setLogs(getLogs().concat([{ turns: thisTurns, HpPoints: thisHpPoints }]));
+			},
+		};
+	},
+
 	"drawLight": function () {
 
 		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)

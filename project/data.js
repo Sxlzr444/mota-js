@@ -171,9 +171,9 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"hero": {
 			"image": "hero.png",
 			"animate": false,
-			"name": "阳光",
+			"name": "雷绍武",
 			"lv": 1,
-			"hpmax": 8261325027904,
+			"hpmax": Number.MAX_SAFE_INTEGER,
 			"hp": 1000,
 			"manamax": -1,
 			"mana": 0,
