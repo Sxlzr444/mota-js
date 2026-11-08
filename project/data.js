@@ -173,7 +173,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"animate": false,
 			"name": "雷绍武",
 			"lv": 1,
-			"hpmax": Number.MAX_SAFE_INTEGER,
+			"hpmax": 9007199254740991,
 			"hp": 1000,
 			"manamax": -1,
 			"mana": 0,
@@ -553,6 +553,11 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			{
 				"type": "comment",
 				"text": "初始剧情"
+			},
+			{
+				"type": "setValue",
+				"name": "item:book",
+				"value": "1"
 			},
 			"Hi，欢迎来到 HTML5 魔塔样板！\n\n本样板由艾之葵制作，可以让你在不会写任何代码\n的情况下也能做出属于自己的H5魔塔！",
 			"这里游戏开始时的剧情。\n\n你可以在这里写上自己的内容。\n赶快来试一试吧！"

@@ -68,6 +68,7 @@ var maps_90f36752_8815_4be8_b32b_d7fad1d0542e =
 	"71": {"cls":"items","id":"shield0"},
 	"72": {"cls":"items","id":"skill1"},
 	"73": {"cls":"items","id":"wand"},
+	"74": {"cls":"items","id":"charShoe"},
 	"81": {"cls":"animates","id":"yellowDoor","trigger":"openDoor","animate":1,"doorInfo":{"time":160,"openSound":"door.mp3","closeSound":"door.mp3","keys":{"yellowKey":1}},"name":"黄门"},
 	"82": {"cls":"animates","id":"blueDoor","trigger":"openDoor","animate":1,"doorInfo":{"time":160,"openSound":"door.mp3","closeSound":"door.mp3","keys":{"blueKey":1}},"name":"蓝门"},
 	"83": {"cls":"animates","id":"redDoor","trigger":"openDoor","animate":1,"doorInfo":{"time":160,"openSound":"door.mp3","closeSound":"door.mp3","keys":{"redKey":1}},"name":"红门"},

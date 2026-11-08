@@ -340,7 +340,7 @@ control.prototype._animateFrame_tip = function (timestamp) {
 
     core.setFont('data', "16px Arial");
     core.setTextAlign('data', 'left');
-    core.clearMap('data', 0, 0, core._PX_, 50);
+    core.clearMap('data', 0, 0, core._PX_, Math.max(50, (tip.boxHeight || 42) + 8));
     core.ui._drawTip_drawOne(tip);
     if (tip.stage == 1) {
         tip.opacity += 0.05;

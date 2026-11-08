@@ -692,13 +692,50 @@ ui.prototype.clearUI = function () {
 }
 
 ////// 左上角绘制一段提示 //////
+////// 左上角提示：按显式换行与可用宽度把文字切成多行 //////
+ui.prototype._drawTip_splitLines = function (text, textX) {
+    core.setFont('data', "16px Arial");
+    var maxWidth = Math.max(80, core._PX_ - textX - 16);
+    var lines = [], line = '', lineWidth = 0;
+    for (var i = 0; i < text.length;) {
+        // 手动换行：既支持真正的换行符，也支持编辑器里写的两个字符的 \n
+        if (text.charAt(i) == '\n' || (text.charAt(i) == '\\' && text.charAt(i + 1) == 'n')) {
+            lines.push(line);
+            line = '';
+            lineWidth = 0;
+            i += text.charAt(i) == '\n' ? 1 : 2;
+            continue;
+        }
+        var rest = text.substring(i);
+        // \r[...] 等控制符不占显示宽度，且不能被从中间截断
+        var control = /^(\r|\\(?:r|c|d|e|g|z))(\[.*?\])?/.exec(rest);
+        if (control) {
+            line += control[0];
+            i += control[0].length;
+            continue;
+        }
+        // \i[xxx] 按两个字符预留宽度
+        var icon = /^\\i(\[.*?\])?/.exec(rest);
+        var token = icon ? icon[0] : text.charAt(i);
+        var width = icon ? core.calWidth('data', '占1') : core.calWidth('data', token);
+        if (lineWidth + width > maxWidth && line !== '') {
+            lines.push(line);
+            line = '';
+            lineWidth = 0;
+        }
+        line += token;
+        lineWidth += width;
+        i += token.length;
+    }
+    if (line !== '' || lines.length == 0) lines.push(line);
+    return lines;
+}
+
 ui.prototype.drawTip = function (text, id, frame) {
     text = core.replaceText(text) || "";
-    var realText = this._getRealContent(text);
     var one = {
         text: text,
         textX: 21,
-        width: 26 + core.calWidth('data', realText, "16px Arial"),
         opacity: 0.1,
         stage: 1,
         frame: frame || 0,
@@ -719,18 +756,31 @@ ui.prototype.drawTip = function (text, id, frame) {
             one.posY = info.posY;
             one.height = info.height;
             one.textX += 24;
-            one.width += 24;
         }
+    }
+    one.lines = this._drawTip_splitLines(text, one.textX);
+    var maxLineWidth = 0;
+    for (var i = 0; i < one.lines.length; i++) {
+        maxLineWidth = Math.max(maxLineWidth, core.calWidth('data', this._getRealContent(one.lines[i])));
+    }
+    one.width = one.textX - 5 + maxLineWidth + 10;
+    one.boxHeight = 20 + 22 * one.lines.length;
+    // 被新提示顶掉时，按上一条的高度清一次，避免多行提示留下残影
+    if (core.animateFrame.tip != null) {
+        core.clearMap('data', 0, 0, core._PX_, (core.animateFrame.tip.boxHeight || 42) + 8);
     }
     core.animateFrame.tip = one;
 }
 
 ui.prototype._drawTip_drawOne = function (tip) {
     core.setAlpha('data', tip.opacity);
-    core.fillRect('data', 5, 5, tip.width, 42, '#000000');
+    core.fillRect('data', 5, 5, tip.width, tip.boxHeight || 42, '#000000');
     if (tip.image)
         core.drawImage('data', tip.image, (tip.posX + tip.frame) * 32, tip.posY * tip.height, 32, 32, 10, 10, 32, 32);
-    core.fillText('data', tip.text, tip.textX, 33, '#FFFFFF');
+    var lines = tip.lines || [tip.text];
+    for (var i = 0; i < lines.length; i++) {
+        core.fillText('data', lines[i], tip.textX, 33 + i * 22, '#FFFFFF');
+    }
     core.setAlpha('data', 1);
 }
 

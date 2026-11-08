@@ -528,5 +528,12 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"name": "钱袋",
 		"itemEffect": "core.status.hero.money += 500",
 		"itemEffectTip": "，金币+500"
+	},
+	"charShoe": {
+		"cls": "items",
+		"name": "劣质鞋",
+		"itemEffect": "core.plugin.bleed.add(Infinity, 10)",
+		"itemEffectTip": "，穿上后你足裂了！\n你将在战斗中受到每回合10点的持续流血伤害。",
+		"text": "质量很差的鞋子，让你足裂了。你在战斗中每回合会受到10点流血伤害。"
 	}
 }

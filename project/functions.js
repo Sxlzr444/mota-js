@@ -319,6 +319,11 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 			// 获得战斗伤害信息
 			var damageInfo = core.getDamageInfo(enemyId, null, x, y) || {};
+
+			// 伤害计算全程只操作模拟副本；只有这里（真实战斗结算）才把战后流血状态写回真实 bleed 对象。
+			// 手册、临界表、能否获胜等调用会丢弃返回值中的 bleed 字段，存档不受影响。
+			core.plugin.bleed.applyBattleResult(damageInfo.bleed);
+			
 			/**  怪物战斗后的剩余HP，用于哈气结算。  
 			 * 如果怪物未拥有哈气技能或其他能够中途脱战的手段，  
 			 * 又或者怪物已经被打死了，即战后hp<=0，  
@@ -777,13 +782,15 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			// x,y：该怪物的坐标（查看手册和强制战斗时为undefined）
 			// floorId：该怪物所在的楼层
 			// 后面三个参数主要是可以在光环等效果上可以适用
+			// 返回值附带 bleed 字段：模拟副本中每一条流血效果的最终值，供战后事件写回真实 bleed 对象
 			floorId = floorId || core.status.floorId;
 
 			let hero = {
 				hp: core.getRealStatusOrDefault(heroData, 'hp'),
 				atk: core.getRealStatusOrDefault(heroData, 'atk'),
 				def: core.getRealStatusOrDefault(heroData, 'def'),
-				mdef: core.getRealStatusOrDefault(heroData, 'mdef')
+				mdef: core.getRealStatusOrDefault(heroData, 'mdef'),
+				bleed: core.plugin.bleed.clone(), // 模拟用的 bleed 副本，所有流血读写只作用于副本，不碰存档
 			};
 
 			// 勇士的负属性都按0计算
@@ -914,7 +921,39 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			 * 否则怪物会无限次复活！
 			 */
 			let twinActived = hasTwin && (!mon.unableToRevive);
-			
+
+			/** @property {number} 战斗中承受的非战斗额外伤害，包括流血伤害 */
+			let extraDamage = 0;
+
+			/**
+			 * 应用dot效果（只操作 hero.bleed 这个模拟副本，不改动存档中的真实流血状态）  
+			 * 将总伤害 damage 中加入本次dot伤害  
+			 * 将总额外伤害 extraDamage 中加入本次dot伤害  
+			 * 令副本中的dot减少一回合持续时间，副本的最终状态随返回值交战后事件写回  
+			 * @returns {void}
+			 */
+			let applyExtraDamage = () => {
+				/** 如果添加其他dot效果可以在这里通过 && 补充 
+				 * @type {boolean} */
+				const APPLY_NEEDED = hero.bleed.isBleeding(); 
+				if (!APPLY_NEEDED) return;
+
+				/** 计算玩家本次将受到的额外dot伤害
+				 * @returns {number}
+				 */
+				let calExtraDotDamage = () => {
+					return hero.bleed.nextTurnDealt;
+				}
+
+				/** 先取出本回合伤害，再减少持续回合数，否则最后一回合的流血伤害会被清掉 */
+				let dotDamage = calExtraDotDamage();
+				hero.bleed.reduceOneTurn();
+
+				extraDamage += dotDamage;
+				damage += dotDamage;
+			}
+
+
 			/** 计算怪物在当前回合对勇士造成的伤害。
 			 * @returns {number} 怪物在当回合造成的伤害，如无特殊效果，为怪物攻击减去玩家防御，且不小于0。
 			 */
@@ -1047,6 +1086,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 					//"heroDealOfThisTurn": 0, 新版逻辑不支持
 					"turn": 0,
 					"damage": Infinity,
+					"extraDealt": extraDamage,
+					"bleed": hero.bleed.logs,
 				};
 			}
 
@@ -1141,6 +1182,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				Object.assign(heroInTurn, heroInCombat);
 				Object.assign(monInTurn, monInCombat);
 
+				// 回合一开始，令玩家受到dot伤害；流血状态的推进只发生在 hero.bleed 副本上
+				applyExtraDamage();
+
 				/** 玩家在当前回合将要造成的伤害。 */
 				heroDealOfThisTurn = minusP(heroInTurn.atk, monInTurn.def);
 				// 未能破防则累计无法破防回合，否则重置计数。
@@ -1220,7 +1264,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				 */
 				"twinReviveUsed": (!core.hasSpecial(mon.special, 5003)) ? void 0
 					: twinActived!==true ? true : false,
-				
+				"extraDealt": extraDamage,				
+				"bleed": hero.bleed.logs,
 			};
 		}
 	},
