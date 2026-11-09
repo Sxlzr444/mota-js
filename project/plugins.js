@@ -7,7 +7,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	},
 
-	"bleed": function () {
+	// 旧版 bleed已禁用，改名为 "_discarded_bleed" 仅保留源码供对照；
+	// 游戏内请使用下方新版 "bleed"。
+	"_discarded_bleed": function () {
+		return false;
 
 		/**
 		 * 一条流血效果的记录
@@ -174,6 +177,131 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		};
 		this.bleed = createBleed(null);
+	},
+
+	"bleed": function () {
+		// 重要！如果游戏中出现了数值特别大的情况，需要写入超过2^53-1的数值，这里不支持，自求多福吧！ //
+		/** 因为 Infinity 在存档中会JSONfy为null，这里使用这个特殊的数字。  
+		 * 因为JS神奇的特性，它减1还是它自身。  
+		 */
+		const INF = 2 ** 54;
+		console.assert(INF-1===INF,"INF 必须满足 INF - 1 === INF，否则会显示这条信息。");
+
+		/** 让游戏中产生的Infinity在存档的JSON文件中记录为INF  
+		 * @returns {number}
+		 */
+		let infToSave = (v) => {
+			if (v === Infinity) return INF;
+			if (v === -Infinity) return -INF; // 保留负无穷
+    		return v;
+		};
+
+		/** 让存档的JSON文件中的INF读取为Infinity  
+		 * @returns {number}
+		 */
+		let infToRead = (v) => {
+			if (v > Number.MAX_SAFE_INTEGER) return Infinity;
+ 			if (v < Number.MIN_SAFE_INTEGER) return -Infinity;
+			return v;
+		}
+
+		class Bleed {
+    		// 私有字段：对应原来的闭包变量 isCopy / localLogs
+    		#isCopy;
+   			#localLogs;
+
+    		// 静态私有方法：对应原来的 readonlyWarn
+	    	static #readonlyWarn() {
+	    		console.warn("此属性只读，无法直接设置，请使用内置的方法操作");
+    		}
+
+    		constructor(source) {
+    			this.#isCopy = source !== null;
+    			this.#localLogs = this.#isCopy  
+				? source.map(log => ({ turns: infToSave(log.turns), HpPoints: log.HpPoints }))
+				: null;
+    		}
+
+    		// 私有方法：对应原来的 getLogs / setLogs，外部语法上就写不出来
+    		#getLogs() {
+    			if (this.#isCopy) return this.#localLogs;
+    			if (!core.status || !core.status.hero) return [];
+    			let logs = core.status.hero.bleed;
+    			if (!Array.isArray(logs)) {
+     				logs = [];
+    				core.status.hero.bleed = logs;
+      			}
+				return logs;
+    		}
+
+			#setLogs(v) {
+				if (this.#isCopy) {
+					this.#localLogs = Array.isArray(v) ? v : [];
+					return true;
+	      		}
+				if (!core.status || !core.status.hero) return false;
+				core.status.hero.bleed = Array.isArray(v) ? v : [];
+				return true;
+			}
+
+			// ---------- 属性 ----------
+			get logs() {
+				return this.#getLogs().map(log => ({ turns: infToRead(log.turns), HpPoints: log.HpPoints }));
+			}
+			set logs(v) { Bleed.#readonlyWarn(); }
+
+			get turnsLeft() {
+				if (!this.isBleeding()) return 0;
+				let raw = Math.max(...this.#getLogs().map(log => log.turns));
+				return infToRead(raw);
+			}
+			set turnsLeft(v) { Bleed.#readonlyWarn(); }
+
+			get nextTurnDealt() {
+				if (!this.isBleeding()) return 0;
+				let sum = 0;
+				for (const log of this.#getLogs()) sum += log.HpPoints;
+				return sum;
+			}
+			set nextTurnDealt(v) { Bleed.#readonlyWarn(); }
+
+			// ---------- 方法 ----------
+			isBleeding() { return this.#getLogs().length > 0; }
+
+    		reduceOneTurn() {
+				if (!this.isBleeding()) return;
+				let logs = this.#getLogs();
+				for (let log of logs) log.turns -= 1;
+			this.#setLogs(logs.filter(log => log.turns > 0));
+			}
+
+    		add(thisTurns, thisHpPoints) {
+				let isTurnsValid = typeof thisTurns === 'number' && thisTurns > 0
+				&& (Number.isInteger(thisTurns) || thisTurns === Infinity);
+				let isHpPointsValid = typeof thisHpPoints === 'number'
+				&& Number.isFinite(thisHpPoints) && thisHpPoints > 0;
+				if (!isTurnsValid || !isHpPointsValid) {
+				console.warn("回合数 thisTurns 和每回合流血伤害 thisHpPoints 并非都是合法数值，设置无效。");
+    			return false;
+    			}
+    			return this.#setLogs(this.#getLogs().concat([{ turns: infToSave(thisTurns), HpPoints: thisHpPoints }]));
+    		}
+
+    		clone() {
+    			return new Bleed(this.#getLogs());
+    		}
+
+    		applyBattleResult(logs) {
+				if (!Array.isArray(logs)) return false;
+				let validLogs = logs.filter(log =>
+        			log && typeof log.turns === 'number' && log.turns > 0 && (Number.isInteger(log.turns) || log.turns === Infinity)
+					&& typeof log.HpPoints === 'number' && Number.isFinite(log.HpPoints) && log.HpPoints > 0
+					);
+					return this.#setLogs(validLogs.map(log => ({ turns: infToSave(log.turns), HpPoints: log.HpPoints })));
+			}
+		}
+
+	this.bleed = new Bleed(null);
 	},
 
 	"drawLight": function () {

@@ -45,9 +45,19 @@ main.floors.MT1=
                         "text": "购买",
                         "action": [
                             {
-                                "type": "setValue",
-                                "name": "item:charShoe",
-                                "value": "1"
+                                "type": "if",
+                                "condition": "(item:charShoe!==1)",
+                                "true": [
+                                    {
+                                        "type": "function",
+                                        "function": "function(){\ncore.plugin.bleed.add(Infinity, 10);\n}"
+                                    },
+                                    {
+                                        "type": "setValue",
+                                        "name": "item:charShoe",
+                                        "value": "1"
+                                    }
+                                ]
                             }
                         ]
                     }

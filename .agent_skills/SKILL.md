@@ -1,6 +1,6 @@
 ---
 name: code-edit-constraints
-description: br的变量命名习惯
+description: br的变量命名习惯和其他事项
 ---
 
 # 代码修改硬性规则
@@ -32,3 +32,9 @@ description: br的变量命名习惯
 - 不做无关重构、重命名、格式化、清理未使用变量、调整代码风格。
 - 不新增 `var`；不随意新增 `const`；不改已有的变量名；不删变量；不删注释。
 - 如果 lint/工具要求新增 `const`、删除未使用变量、重命名，先报告冲突并询问。
+
+# 其他事项
+
+## 1. 不要生成 `.workbuddy/memory` 这种记录文件了
+- 请勿在此路径或任何路径下生成修改摘要。
+- 原 `.workbuddy/memory` 路径已删除。
