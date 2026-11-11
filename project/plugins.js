@@ -193,7 +193,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 */
 		let infToSave = (v) => {
 			if (v === Infinity) return INF;
-			if (v === -Infinity) return -INF; // 保留负无穷
     		return v;
 		};
 
@@ -202,7 +201,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 */
 		let infToRead = (v) => {
 			if (v > Number.MAX_SAFE_INTEGER) return Infinity;
- 			if (v < Number.MIN_SAFE_INTEGER) return -Infinity;
 			return v;
 		}
 
@@ -299,6 +297,28 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					&& typeof log.HpPoints === 'number' && Number.isFinite(log.HpPoints) && log.HpPoints > 0
 					);
 					return this.#setLogs(validLogs.map(log => ({ turns: infToSave(log.turns), HpPoints: log.HpPoints })));
+			}
+
+			clear(permanent=null) {
+				if ( permanent===true || permanent===Infinity ) {
+					return this.#setLogs(this.#getLogs()
+						.filter( j => 
+							Number.isFinite(infToRead(j.turns))
+						) 
+					) ? Infinity : false;
+				}
+				if ( typeof permanent === "number" && (!isNaN(permanent)) ) {
+					return this.#setLogs(this.#getLogs()
+						.filter( j => 
+							(j.turns!==permanent)
+						) 
+					) ? permanent : false;
+				}
+				if ( permanent===false || permanent===null ) {
+					return this.#setLogs([]);
+				}
+				console.warn("输入参数错误，输入 true 或 Infinity 表示只清除永久效果，输入 false 或 不输入参数表示清除所有流血效果。");
+				return false;
 			}
 		}
 

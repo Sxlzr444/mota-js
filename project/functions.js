@@ -1689,6 +1689,12 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			keys.forEach(function (key) {
 				core.setStatusBarInnerHTML(key, core.setTwoDigits(core.itemCount(key)));
 			});
+			/** debuff 行紧凑排列：先恢复各槽位可见，写入文字后再隐藏空槽，  
+			* 避免空的 poison/weak/curse 仍占着 margin-left，把 bleed 推离行首 */
+			let debuffLabelIds = ['poison', 'weak', 'curse', 'bleed'];
+			debuffLabelIds.forEach(function (id) {
+				if (core.statusBar[id]) core.statusBar[id].style.display = '';
+			});
 			// 毒衰咒
 			core.setStatusBarInnerHTML('poison', core.hasFlag('poison') ? "毒" : "");
 			core.setStatusBarInnerHTML('weak', core.hasFlag('weak') ? "衰" : "");
@@ -1711,6 +1717,12 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				core.setStatusBarInnerHTML('bleed', BLEED_TEXT_TO_DISPLAY ,'color: #FF8888');
 			}
 			else core.setStatusBarInnerHTML('bleed', "" , 'color: #FF8888');
+
+			// 隐藏没有内容的槽位，使有内容的状态始终从行首依次紧凑排列
+			debuffLabelIds.forEach(function (id) {
+				let label = core.statusBar[id];
+				if (label) label.style.display = label.getAttribute('_value') ? '' : 'none';
+			});
 
 			// 难度
 			if (core.statusBar.hard.innerText != core.status.hard) {

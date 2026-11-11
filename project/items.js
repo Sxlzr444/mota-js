@@ -534,7 +534,70 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"name": "劣质鞋",
 		"itemEffect": "null",
 		"itemEffectTip": "，穿上后你足裂了！\n你将在战斗中受到每回合10点的持续流血伤害。",
-		"text": "质量很差的鞋子，让你足裂了。你在战斗中每回合会受到10点流血伤害。",
+		"text": "质量很差的鞋子，让你足裂的罪魁祸首。\n在治愈前，你在战斗中每回合会受到10点流血伤害。",
 		"canUseItemEffect": "false"
+	},
+	"I331": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I332": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I333": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I334": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I335": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I336": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I337": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I338": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I339": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I340": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"I341": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
+	},
+	"iodineBottle": {
+		"cls": "items",
+		"name": "碘酒",
+		"canUseItemEffect": "true",
+		"itemEffectTip": "，你的足裂缓解了！",
+		"itemEffect": "core.plugin.bleed.clear(true);",
+		"text": "一瓶碘酒，可以治疗足裂。"
 	}
 }
