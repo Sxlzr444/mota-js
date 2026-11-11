@@ -1698,6 +1698,20 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			core.setStatusBarInnerHTML('bomb', "炸" + core.itemCount('bomb'));
 			core.setStatusBarInnerHTML('fly', "飞" + core.itemCount('centerFly'));
 
+			// 设置流血
+			if (core.plugin.bleed.isBleeding()) {
+				/** 显示流血剩余回合数 
+				 * @type {string}
+				*/
+				const BLEED_TEXT_TURNS = Number.isFinite(core.plugin.bleed.turnsLeft) 
+					? core.plugin.bleed.turnsLeft.toString() 
+					: "永久";
+				/** 显示“流血 [剩余回合数]” */
+				const BLEED_TEXT_TO_DISPLAY = "流血 " + BLEED_TEXT_TURNS;
+				core.setStatusBarInnerHTML('bleed', BLEED_TEXT_TO_DISPLAY ,'color: #FF8888');
+			}
+			else core.setStatusBarInnerHTML('bleed', "" , 'color: #FF8888');
+
 			// 难度
 			if (core.statusBar.hard.innerText != core.status.hard) {
 				core.statusBar.hard.innerText = core.status.hard;

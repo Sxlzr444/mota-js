@@ -179,6 +179,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		this.bleed = createBleed(null);
 	},
 
+	/** 流血效果插件 */
 	"bleed": function () {
 		// 重要！如果游戏中出现了数值特别大的情况，需要写入超过2^53-1的数值，这里不支持，自求多福吧！ //
 		/** 因为 Infinity 在存档中会JSONfy为null，这里使用这个特殊的数字。  
@@ -302,6 +303,40 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	this.bleed = new Bleed(null);
+	
+
+	(
+		/** 在游戏开始前注册流血效果的状态栏显示功能  
+		 * 请勿调用此函数，因为 bleed 对象根本没有这个方法，会报错！  
+		 * function外部的括号，包括上面那行单独的括号也不要删除，否则报错！
+		 * @returns {undefined}
+		 */	
+		function assignHtmlElement(){
+		if (!document.getElementById('debuffCol')) return; // 如果没有显示debuff，就不会显示流血效果，故不实行HTML元素登记
+		if (document.getElementById('bleed')) return; // 已经登记了 bleed，就不重复登记
+		/** 将流血效果显示的文字定义为要登记的HTML元素 */
+    	let assignee = document.createElement('span');
+		/** 将流血效果显示的文字选择套用状态栏的CSS样式，即 statusLabel 样式*/
+    	assignee.className = 'statusLabel';
+		/** 给流血效果显示的文字起一个可索引的 id 为 bleed */
+    	assignee.id = 'bleed';
+		// 将流血效果显示的文字选择登记在 debuff 一行中
+    	document.getElementById('debuffCol').appendChild(assignee);
+		// 实施登记
+    	core.statusBar.bleed = assignee;      		
+	})();
+
+	// 另起一行显示流血的写法，现禁用
+	if (false) {
+	let displayee = document.createElement('div');
+	displayee.className = 'status';
+	displayee.id = 'bleedCol';
+	displayee.innerHTML = "<p class='statusLabel statusText' id='bleed'></p>";
+	document.getElementById('statusBar').insertBefore(displayee, document.getElementById('statusCanvas'));
+	// 在 setStatusBarInnerHTML 注册 bleed 类别
+	core.statusBar.bleed = document.getElementById('bleed');
+	} 
+
 	},
 
 	"drawLight": function () {

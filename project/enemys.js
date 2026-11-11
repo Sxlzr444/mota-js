@@ -10,7 +10,7 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"vampire": {"name":"冥灵魔王","hp":888,"atk":888,"def":888,"money":888,"exp":888,"point":0,"special":[6],"n":8},
 	"skeleton": {"name":"骷髅人","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"skeletonCaptain": {"name":"骷髅队长","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
-	"zombie": {"name":"兽人","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
+	"zombie": {"name":"兽人","hp":11,"atk":2,"def":1,"money":0,"exp":0,"point":0,"special":[12]},
 	"zombieKnight": {"name":"兽人武士","hp":1200,"atk":150,"def":50,"money":33,"exp":0,"point":0,"special":[5001,5003],"value":200},
 	"rock": {"name":"石头人","hp":50,"atk":50,"def":0,"money":3,"exp":0,"point":0,"special":3},
 	"bluePriest": {"name":"初级法师","hp":100,"atk":120,"def":0,"money":3,"exp":0,"point":1,"special":[9,5003]},
