@@ -332,6 +332,24 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @returns {undefined}
 		 */	
 		function assignHtmlElement(){
+		/** 生命数值右上角的小字：下一回合将受到的流血伤害。
+		 * 不写死坐标，也不直接挂到 #statusBar 上：#hp 所在的行会随状态栏显示项、横竖屏、缩放而重排，
+		 * 因此这里只创建并登记节点，由 updateStatusBar 把它挂进 #hp 的数值文本节点内部，
+		 * 让文本流（vertical-align: super）决定它相对数值的右上角位置。
+		 */
+		if (document.getElementById('hp') && !core.statusBar.bleedNextDamage) {
+			let damageLabel = document.createElement('span');
+			damageLabel.id = 'bleedNextDamage';
+			// 相对 #hp 的数值字体缩小并上标；不带 statusLabel/statusText 类，
+			// 以免 control._resize_status 统一设置行高、颜色时把小字样式覆盖掉
+			damageLabel.style.fontSize = '0.55em';
+			damageLabel.style.verticalAlign = 'super';
+			damageLabel.style.marginLeft = '0.1em';
+			damageLabel.style.color = '#FF8888';
+			damageLabel.style.display = 'none';
+			// 登记到 core.statusBar，之后可用 core.setStatusBarInnerHTML('bleedNextDamage', ...) 写入内容
+			core.statusBar.bleedNextDamage = damageLabel;
+		}
 		if (!document.getElementById('debuffCol')) return; // 如果没有显示debuff，就不会显示流血效果，故不实行HTML元素登记
 		if (document.getElementById('bleed')) return; // 已经登记了 bleed，就不重复登记
 		/** 将流血效果显示的文字定义为要登记的HTML元素 */

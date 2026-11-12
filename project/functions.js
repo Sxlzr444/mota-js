@@ -1718,6 +1718,22 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			}
 			else core.setStatusBarInnerHTML('bleed', "" , 'color: #FF8888');
 
+			// 生命数值右上角：下一回合将受到的流血伤害小字
+			let bleedDamageLabel = core.statusBar.bleedNextDamage;
+			if (bleedDamageLabel) {
+				if (core.plugin.bleed.isBleeding()) {
+					// 与状态栏其他数值一致：用 formatBigNumber 截断小数，并格式化大数
+					core.setStatusBarInnerHTML('bleedNextDamage', "-" + core.formatBigNumber(core.plugin.bleed.nextTurnDealt), 'color: #FF8888');
+					bleedDamageLabel.style.display = '';
+					// setStatusBarInnerHTML('hp', ...) 会重写 #hp 的内容（innerHTML 或 children[0].innerText），
+					// 挂在数值节点里的小字会被摘掉，所以每次更新后都把它重新接回数值文本的末尾
+					let hpTextNode = core.statusBar.hp.children[0];
+					if (hpTextNode && bleedDamageLabel.parentNode !== hpTextNode) hpTextNode.appendChild(bleedDamageLabel);
+				} else {
+					bleedDamageLabel.style.display = 'none';
+				}
+			}
+
 			// 隐藏没有内容的槽位，使有内容的状态始终从行首依次紧凑排列
 			debuffLabelIds.forEach(function (id) {
 				let label = core.statusBar[id];
@@ -2175,6 +2191,15 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				core.ui.setFont(ctx, (/\w+/.test(text) ? 'italic ' : '') + 'bold 18px Verdana');
 				core.ui.fillBoldText(ctx, text, x, y, style);
 			};
+			/** 自绘状态栏/隐藏状态栏时 #hp 行被隐藏，DOM 小字不可见，改在生命数值右上角画一处 canvas 小字。
+			 * 位置以 fill() 刚设置的 18px 字体量出的数值宽度为基准，数值变长时小字会跟着右移。 */
+			let fillBleedDamage = function (x, y) {
+				if (!core.plugin.bleed || !core.plugin.bleed.isBleeding()) return;
+				let hpText = core.formatBigNumber(core.getRealStatus('hp'));
+				let textWidth = ctx.measureText(hpText).width; // 此时 ctx.font 仍是 fill() 设置的 18px
+				core.ui.setFont(ctx, 'bold 11px Verdana');
+				core.ui.fillBoldText(ctx, "-" + core.formatBigNumber(core.plugin.bleed.nextTurnDealt), x + textWidth + 2, y - 8, '#FF8888');
+			};
 			if (core.flags.statusCanvas) { // 系统开关「自绘状态栏」开启
 				core.ui.clearMap(ctx = core.dom.statusCanvasCtx); // 清空状态栏
 				core.ui.setFillStyle(ctx, core.status.globalAttribute.statusBarColor);
@@ -2183,6 +2208,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 					fill((core.status.thisMap || {}).name || "Loading", 42, 26);
 					core.drawImage(ctx, core.statusBar.icons.hp, 137, 6, 25, 25);
 					fill(core.formatBigNumber(core.getRealStatus('hp')), 173, 26);
+					fillBleedDamage(173, 26);
 					core.drawImage(ctx, core.statusBar.icons.atk, 268, 6, 25, 25);
 					fill(core.formatBigNumber(core.getRealStatus('atk')), 304, 26);
 					core.drawImage(ctx, core.statusBar.icons.def, 6, 38, 25, 25);
@@ -2198,6 +2224,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 					fill((core.status.thisMap || {}).name || "Loading", 42, 29);
 					core.drawImage(ctx, core.statusBar.icons.hp, 6, 43, 25, 25);
 					fill(core.formatBigNumber(core.getRealStatus('hp')), 42, 63);
+					fillBleedDamage(42, 63);
 					core.drawImage(ctx, core.statusBar.icons.atk, 6, 77, 25, 25);
 					fill(core.formatBigNumber(core.getRealStatus('atk')), 42, 97);
 					core.drawImage(ctx, core.statusBar.icons.def, 6, 111, 25, 25);
@@ -2225,6 +2252,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				fill((core.status.thisMap || {}).name || "Loading", 42 + offset, 29);
 				core.drawImage(ctx, core.statusBar.icons.hp, 6 + offset, 43, 25, 25);
 				fill(core.formatBigNumber(core.getRealStatus('hp')), 42 + offset, 63);
+				fillBleedDamage(42 + offset, 63);
 				core.drawImage(ctx, core.statusBar.icons.atk, 6 + offset, 77, 25, 25);
 				fill(core.formatBigNumber(core.getRealStatus('atk')), 42 + offset, 97);
 				core.drawImage(ctx, core.statusBar.icons.def, 6 + offset, 111, 25, 25);
