@@ -320,6 +320,38 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				console.warn("输入参数错误，输入 true 或 Infinity 表示只清除永久效果，输入 false 或 不输入参数表示清除所有流血效果。");
 				return false;
 			}
+
+			/** 在状态栏上显示流血状态和数字 */
+			brushNewDisplay() {
+				// 没显示debuff状态栏，此方法不执行
+				// HP右上角小字和底部流血状态都不会显示
+				if (!document.getElementById('debuffCol')) return false; 
+
+				// 状态栏流血文本
+				if (this.isBleeding()) {
+					let bleed_turns = Number.isFinite(this.turnsLeft) ? this.turnsLeft.toString() : "永久";
+					const BLEED_TURNS_TEXT = "流血 " + bleed_turns;
+				
+					core.setStatusBarInnerHTML("bleed", BLEED_TURNS_TEXT , "color: #FF8888"); 
+					// 生命数值右上角显示下一回合将受到的流血伤害小字
+					/** @property {object} bleedDamageLabel 流血伤害显示标签 */
+					let bleedDamageLabel = core.statusBar.bleedNextDamage;
+					// 存在则更新显示
+					if (bleedDamageLabel) {
+        				core.setStatusBarInnerHTML("bleedNextDamage", "-" 
+							+ core.formatBigNumber(this.nextTurnDealt), "color: #FF8888");
+       					bleedDamageLabel.style.display = "";
+        				// setStatusBarInnerHTML('hp', ...) 会重写 #hp 内容，导致小字被摘掉，因此每次更新后重新接回数值文本末尾
+        				let hpTextNode = core.statusBar.hp.children[0];
+        				if (hpTextNode && bleedDamageLabel.parentNode !== hpTextNode) hpTextNode.appendChild(bleedDamageLabel);
+						}
+					}
+					else {
+						if (core.statusBar.bleedNextDamage) core.statusBar.bleedNextDamage.style.display = "none"; // 不存在则不显示
+						core.setStatusBarInnerHTML("bleed", "" , "color: #FF8888");}
+				return true;
+			}
+
 		}
 
 	this.bleed = new Bleed(null);

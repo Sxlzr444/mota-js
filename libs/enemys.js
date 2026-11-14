@@ -249,7 +249,9 @@ enemys.prototype.nextCriticals = function (enemy, number, x, y, floorId) {
         }
     }
     else {
-        return this._nextCriticals_useTurn(enemy, info, number, x, y, floorId);
+        // 指数探测 + 小区间二分：只以「战斗回合数下降」为判据，
+        // 不依赖 mon_hp / turn 的比例关系，双生、哈气、未破防等自定义战斗逻辑可统一处理。
+        return this._nextCriticals_useProbe(enemy, info, number, x, y, floorId);
     }
 }
 
@@ -275,7 +277,7 @@ enemys.prototype._nextCriticals_overAtk = function (enemy, x, y, floorId) {
 
 enemys.prototype._nextCriticals_special = function (enemy, number, x, y, floorId) {
     if (this.hasSpecial(enemy.special, 10) || this.hasSpecial(enemy.special, 3))
-        return []; // 模仿or坚固临界
+        return [[0, 0]]; // 模仿/坚固不计算，直接给临界0、减伤0
     return null;
 }
 
@@ -337,6 +339,93 @@ enemys.prototype._nextCriticals_useBinarySearch = function (enemy, info, number,
     if (list.length == 0) list.push([0, 0]);
     return list;
 }
+
+////// 临界计算：指数探测 + 小区间二分 //////
+// 与回合数法的区别：不再用 mon_hp / turn 反推攻击力，而是直接试探 getDamageInfo 的回合数。
+// 因此只要战斗逻辑能让「回合数随攻击力下降」，双生、哈气、未破防(turn=Infinity) 都无需特判。
+// 步骤：1) 攻击力依次 +1,+2,+4,+8... 找到回合数首次下降的区间；
+//       2) 在该小区间内二分，求出使回合数下降的最小攻击力提升点数；
+//       3) 累计提升超过 mon_hp + mon_def 即中止；伤害未严格下降的怪不给临界；
+//       4) 沿用引擎约定：未破防怪的第一项用负数表示刚刚破防时的伤害，后续项按破防后的伤害累计减伤。
+enemys.prototype._nextCriticals_useProbe = function (enemy, info, number, x, y, floorId) {
+    var self = this;
+    var hero_atk = core.status.hero.atk;
+    var limit = (info.mon_hp || 0) + (info.mon_def || 0);
+    var list = [];
+    var baseAtk = hero_atk;
+    var baseTurn = info.turn;
+    var baseDamage = info.damage;
+    // 未破防 / 打不过时 getDamageInfo 返回 Infinity，此项用负数表示刚破防的伤害
+    var over = !Number.isFinite(baseDamage);
+    if (typeof baseTurn !== 'number' || typeof baseDamage !== 'number' || !(limit > 0))
+        return [[0, 0]];
+
+    // 同一攻击力的伤害信息会被探测和二分多次用到，缓存起来避免重复模拟整场战斗
+    var cache = {};
+    var infoAt = function (atk) {
+        if (atk === hero_atk) return info;
+        if (Object.prototype.hasOwnProperty.call(cache, atk)) return cache[atk];
+        var r = self.getDamageInfo(enemy, { "atk": atk }, x, y, floorId);
+        cache[atk] = r == null ? null : r;
+        return r;
+    };
+    var turnAt = function (atk) {
+        var r = infoAt(atk);
+        if (r == null || typeof r === 'number') return Infinity;
+        return typeof r.turn === 'number' ? r.turn : Infinity;
+    };
+    var damageAt = function (atk) {
+        var r = infoAt(atk);
+        if (r == null) return Infinity;
+        if (typeof r === 'number') return r;
+        return typeof r.damage === 'number' ? r.damage : Infinity;
+    };
+
+    while (list.length < number) {
+        // 累计提升点数不得超过怪物 HP + 防御
+        var remaining = limit - (baseAtk - hero_atk);
+        if (remaining <= 0) break;
+
+        // --- 指数探测，定位 (lo, hi] ---
+        var lo = 0, hi = null;
+        for (var d = 1; ; d *= 2) {
+            var step = Math.min(d, remaining);
+            if (turnAt(baseAtk + step) < baseTurn) { hi = step; break; }
+            lo = step;
+            if (step >= remaining) break;
+        }
+        if (hi == null) break; // 加满上限回合数也不下降，无临界
+
+        // --- 小区间二分，找最小的下降点 ---
+        while (hi - lo > 1) {
+            var mid = Math.floor((lo + hi) / 2);
+            if (turnAt(baseAtk + mid) < baseTurn) hi = mid;
+            else lo = mid;
+        }
+
+        var critAtk = baseAtk + hi;
+        var critTurn = turnAt(critAtk);
+        var critDamage = damageAt(critAtk);
+        // 回合数下降但伤害没降（反击等非单调情形）→ 不给临界
+        if (!(baseDamage > critDamage)) break;
+
+        if (over) {
+            list.push([critAtk - hero_atk, -Math.floor(critDamage)]);
+            over = false;
+            baseDamage = critDamage; // 之后的减伤以刚破防时的伤害为基准
+        } else {
+            list.push([critAtk - hero_atk, Math.floor(baseDamage - critDamage)]);
+        }
+
+        baseAtk = critAtk;
+        baseTurn = critTurn;
+        if (critDamage <= 0 && !core.flags.enableNegativeDamage) break;
+        if (critTurn <= 1) break;
+    }
+
+    if (list.length === 0) list.push([0, 0]);
+    return list;
+};
 
 enemys.prototype._nextCriticals_useTurn = function (enemy, info, number, x, y, floorId) {
     var mon_hp = info.mon_hp, hero_atk = core.status.hero.atk, mon_def = info.mon_def, turn = info.turn;

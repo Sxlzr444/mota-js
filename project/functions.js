@@ -1705,34 +1705,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			core.setStatusBarInnerHTML('fly', "飞" + core.itemCount('centerFly'));
 
 			// 设置流血
-			if (core.plugin.bleed.isBleeding()) {
-				/** 显示流血剩余回合数 
-				 * @type {string}
-				*/
-				const BLEED_TEXT_TURNS = Number.isFinite(core.plugin.bleed.turnsLeft) 
-					? core.plugin.bleed.turnsLeft.toString() 
-					: "永久";
-				/** 显示“流血 [剩余回合数]” */
-				const BLEED_TEXT_TO_DISPLAY = "流血 " + BLEED_TEXT_TURNS;
-				core.setStatusBarInnerHTML('bleed', BLEED_TEXT_TO_DISPLAY ,'color: #FF8888');
-			}
-			else core.setStatusBarInnerHTML('bleed', "" , 'color: #FF8888');
-
-			// 生命数值右上角：下一回合将受到的流血伤害小字
-			let bleedDamageLabel = core.statusBar.bleedNextDamage;
-			if (bleedDamageLabel) {
-				if (core.plugin.bleed.isBleeding()) {
-					// 与状态栏其他数值一致：用 formatBigNumber 截断小数，并格式化大数
-					core.setStatusBarInnerHTML('bleedNextDamage', "-" + core.formatBigNumber(core.plugin.bleed.nextTurnDealt), 'color: #FF8888');
-					bleedDamageLabel.style.display = '';
-					// setStatusBarInnerHTML('hp', ...) 会重写 #hp 的内容（innerHTML 或 children[0].innerText），
-					// 挂在数值节点里的小字会被摘掉，所以每次更新后都把它重新接回数值文本的末尾
-					let hpTextNode = core.statusBar.hp.children[0];
-					if (hpTextNode && bleedDamageLabel.parentNode !== hpTextNode) hpTextNode.appendChild(bleedDamageLabel);
-				} else {
-					bleedDamageLabel.style.display = 'none';
-				}
-			}
+			core.plugin.bleed.brushNewDisplay()
 
 			// 隐藏没有内容的槽位，使有内容的状态始终从行首依次紧凑排列
 			debuffLabelIds.forEach(function (id) {
