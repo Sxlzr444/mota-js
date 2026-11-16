@@ -635,6 +635,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				[5001, "哈气",  function (enemy) { return "怪物会对经过周围的玩家造成"+(enemy.hissValue??enemy.value??0)+"点伤害。怪物每累计损失最大生命值的25%，就会脱离战斗，并尝试逃向相邻的空格；若没有空格可逃，则留在原地。";}, "#aaddff"],
 				[5002, "争先", function (enemy) { return "怪物可选择每回合攻击任意次数，每额外攻击一次，所有攻击伤害降低" + (enemy.costValueForMultiStrikes || "[错误！本技能代价的点数未指定或为0]") + "点，最低为0；怪物会选择总伤害最高的攻击次数。"; }, "#ffee77"],
 				[5003, "双生", "两只相同怪物在同一方格内出现。战斗时，玩家必须依次击败两只怪物，方格内未被击败的所有怪物会同时对玩家发动攻击。", "#9111aa"],
+				[5004, "嗜血", "当玩家流血时，怪物本回合中获得等量的临时生命和攻击力。", "#aa112d"],
 				[11001,"扣税", function (enemy) { return "经过怪物周围" + (enemy.zoneSquare ? "九宫格" : "十字") + "时需要缴纳" + (enemy.tax ?? 10) + "金币，同时怪物后退一格，如无法缴纳则你死亡。"; }, "#ffdd55"],
 			];
 		},
@@ -1182,11 +1183,18 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				Object.assign(heroInTurn, heroInCombat);
 				Object.assign(monInTurn, monInCombat);
 
+				/** @type {number} 嗜血怪物于回合中获取的临时属性，数值等同于本回合玩家受到的流血伤害。 */
+				let vampValue = hero.bleed.nextTurnDealt ?? 0;
+
 				// 回合一开始，令玩家受到dot伤害；流血状态的推进只发生在 hero.bleed 副本上
 				applyExtraDamage();
 
 				/** 玩家在当前回合将要造成的伤害。 */
 				heroDealOfThisTurn = minusP(heroInTurn.atk, monInTurn.def);
+
+				// 怪物技能——嗜血，获得临时生命值
+				if (core.hasSpecial(mon.special,5004)) heroDealOfThisTurn = minusP(heroDealOfThisTurn, vampValue);
+
 				// 未能破防则累计无法破防回合，否则重置计数。
 				if (heroDealOfThisTurn <= 0) {
 					noDamageTurns += 1;
@@ -1231,6 +1239,10 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				// 怪物攻击开始：使用技能结算后的本回合属性。
 				Object.assign(heroInTurn, heroInCombat);
 				Object.assign(monInTurn, monInCombat);
+
+				// 怪物技能——嗜血，获得临时攻击力
+				if (core.hasSpecial(mon.special,5004)) monInTurn.atk += vampValue;
+
 				heroDealtOfThisTurn = calTurnDealt();
 				//如果怪物处于双生状态，那么两只怪物都要结算一次伤害
 				if (twinActived==true) heroDealtOfThisTurn += calTurnDealt();

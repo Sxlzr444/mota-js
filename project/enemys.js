@@ -1,10 +1,10 @@
 var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 = 
 {
 	"greenSlime": {"name":"绿头怪","hp":35,"atk":15,"def":0,"money":0,"exp":0,"point":0,"special":0},
-	"redSlime": {"name":"红头怪","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[16,18],"value":10},
+	"redSlime": {"name":"红头怪","hp":70,"atk":28,"def":5,"money":0,"exp":0,"point":0,"special":[],"value":10},
 	"blackSlime": {"name":"青头怪","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"slimelord": {"name":"怪王","hp":100,"atk":120,"def":0,"money":10,"exp":0,"point":0,"special":[1,9]},
-	"bat": {"name":"小蝙蝠","hp":100,"atk":35,"def":0,"money":2,"exp":0,"point":0,"special":[5003]},
+	"bat": {"name":"小蝙蝠","hp":50,"atk":75,"def":1,"money":2,"exp":0,"point":0,"special":[5003]},
 	"bigBat": {"name":"大蝙蝠","hp":300,"atk":150,"def":0,"money":0,"exp":0,"point":0,"special":[]},
 	"redBat": {"name":"红蝙蝠","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[]},
 	"vampire": {"name":"冥灵魔王","hp":888,"atk":888,"def":888,"money":888,"exp":888,"point":0,"special":[6],"n":8},
@@ -12,7 +12,7 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"skeletonCaptain": {"name":"骷髅队长","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"zombie": {"name":"兽人","hp":11,"atk":2,"def":1,"money":0,"exp":0,"point":0,"special":[12]},
 	"zombieKnight": {"name":"兽人武士","hp":1200,"atk":150,"def":50,"money":33,"exp":0,"point":0,"special":[5001,5003],"value":200},
-	"rock": {"name":"石头人","hp":50,"atk":50,"def":0,"money":3,"exp":0,"point":0,"special":3},
+	"rock": {"name":"石头人","hp":50,"atk":50,"def":35,"money":3,"exp":0,"point":0,"special":[3]},
 	"bluePriest": {"name":"初级法师","hp":100,"atk":120,"def":0,"money":3,"exp":0,"point":1,"special":[9,5003]},
 	"redPriest": {"name":"高级法师","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"brownWizard": {"name":"初级巫师","hp":100,"atk":120,"def":0,"money":16,"exp":0,"point":0,"special":15,"value":100,"range":2},
@@ -80,5 +80,6 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"bearDown": {"name":"神人·石狩野人","hp":380,"atk":135,"def":75,"money":0,"exp":0,"point":0,"special":[1,5001,5002],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"},"bigImage":"bear.png","costValueForMultiStrikes":10,"hissValue":60},
 	"bearLeft": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
 	"bearRight": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
-	"bearUp": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}}
+	"bearUp": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
+	"bleedSlime": {"name":"吸血软泥","hp":120,"atk":45,"def":10,"money":0,"exp":0,"point":0,"special":[5004]}
 }

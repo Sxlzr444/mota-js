@@ -197,7 +197,8 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"blueKing": 45,
 		"keiskeiFairy": 71,
 		"tulipFairy": 72,
-		"purpleBowman": 65
+		"purpleBowman": 65,
+		"bleedSlime": 73
 	},
 	"enemy48": {
 		"angel": 0,
@@ -273,7 +274,7 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"I339": 37,
 		"I340": 38,
 		"I341": 39,
-		"iodineBottle": 63,
+		"iodineBottle": 63
 	},
 	"autotile": {
 		"autotile": 0,

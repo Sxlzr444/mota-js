@@ -1,15 +1,11 @@
-///<reference path='../runtime.d.ts'/>
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
 {
-	"init": function () {
+    "init": function () {
 		this._afterLoadResources = function () {
 			// 本函数将在所有资源加载完毕后，游戏开启前被执行
 		}
 	},
-
-	// 旧版 bleed已禁用，改名为 "_discarded_bleed" 仅保留源码供对照；
-	// 游戏内请使用下方新版 "bleed"。
-	"_discarded_bleed": function () {
+    "_discarded_bleed": function () {
 		return false;
 
 		/**
@@ -178,9 +174,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		};
 		this.bleed = createBleed(null);
 	},
-
-	/** 流血效果插件 */
-	"bleed": function () {
+    "bleed": function () {
 		// 重要！如果游戏中出现了数值特别大的情况，需要写入超过2^53-1的数值，这里不支持，自求多福吧！ //
 		/** 因为 Infinity 在存档中会JSONfy为null，这里使用这个特殊的数字。  
 		 * 因为JS神奇的特性，它减1还是它自身。  
@@ -408,8 +402,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	} 
 
 	},
-
-	"drawLight": function () {
+    "drawLight": function () {
 
 		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
 		// 【参数说明】
@@ -470,7 +463,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
 		}
 	},
-	"shop": function () {
+    "shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -665,7 +658,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-	"removeMap": function () {
+    "removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -752,7 +745,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-	"fiveLayers": function () {
+    "fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -906,7 +899,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-	"itemShop": function () {
+    "itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -1212,7 +1205,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"enemyLevel": function () {
+    "enemyLevel": function () {
 		// 此插件将提供怪物手册中的怪物境界显示
 		// 使用此插件需要先给每个怪物定义境界，方法如下：
 		// 点击怪物的【配置表格】，找到“【怪物】相关的表格配置”，然后在【名称】仿照增加境界定义：
@@ -1298,7 +1291,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillText('ui', core.formatBigNumber(enemy.def || 0), col3 + 30, position, /* [255, 0, 0, 1] */ null, b13);
 		}
 	},
-	"multiHeros": function () {
+    "multiHeros": function () {
 		// 多角色插件
 		// Step 1: 启用本插件
 		// Step 2: 定义每个新的角色各项初始数据（参见下方注释）
@@ -1444,7 +1437,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag("heroId", toHeroId); // 保存切换到的角色ID
 		}
 	},
-	"heroFourFrames": function () {
+    "heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -1497,7 +1490,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-	"routeFixing": function () {
+    "routeFixing": function () {
 		// 是否开启本插件，true 表示启用，false 表示禁用。
 		var __enable = true;
 		if (!__enable) return;
@@ -1588,7 +1581,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}, 100);
 	},
-	"numpad": function () {
+    "numpad": function () {
 		// 样板自带的整数输入事件为白屏弹窗且可以误输入任意非法内容但不支持负整数，观感较差。本插件可以将其美化成仿RM样式，使其支持负整数同时带有音效
 		// 另一方面，4399等第三方平台不允许使用包括 core.myprompt() 和 core.myconfirm() 在内的弹窗，因此也需要此插件来替代，不然类似生命魔杖的道具就不好实现了
 		// 关于负整数输入，V2.8.2原生支持其录像的压缩和解压，只是默认的 core.events._action_input() 函数将负数取了绝对值，可以只复写下面的 core.isReplaying() 部分来取消
@@ -1763,7 +1756,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"sprites": function () {
+    "sprites": function () {
 		// 基于canvas的sprite化，摘编整理自万宁魔塔
 		// 
 		// ---------------------------------------- 第一部分 js代码 （必装） --------------------------------------- //
@@ -1955,7 +1948,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		window.Sprite = Sprite;
 	},
-	"hotReload": function () {
+    "hotReload": function () {
 		/* ---------- 功能说明 ---------- *
 
 		1. 当 libs/ main.js index.html 中的任意一个文件被更改后，会自动刷新塔的页面
@@ -2218,5 +2211,231 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}, 1000);
 			}
 		})();
+	},
+    "editorDamageViewer": function () {
+	// 在此增加新插件
+	/////// 用户设置 ///////
+	// 将__enable置为false将关闭插件
+	var __enable = true;
+	// 魔防攻速之类的属性可以在这里加 ['atk', 'def', 'mdef']
+	var heroStatus = ['atk', 'def', 'mdef', 'hp'];
+	// saveHero为true 将会把每次造塔测试时的角色数据存下来 否则会读取初始属性
+	// 用不着可以关了 节约缓存空间 (虽然根本没多少 还没一个存档大
+	// 也可以手动清理 控制台输入core.removeLocalStorage('editorHero')即可
+	var saveHero = true;
+
+	// 下为具体实现 懒得写注释了 大概就是写HTML然后注册交互
+	if (!__enable || main.mode != 'editor') return;
+	core.plugin.initEditorDamage = false;
+	if (heroStatus.length >= 4 && !editor.isMobile) editor.dom.mid2.style.top = 650 + 30 * (heroStatus.length - 3) + 'px';
+	editor.statusRatio = core.getLocalStorage('statusRatio', 1);
+	editor.saveHero = saveHero;
+	editor._heroStatus = heroStatus;
+	editor.dom.mapEdit.appendChild(core.canvas.damage.canvas)
+	var HTML = "<input type='button' value='←'/><input type='button' value='↑'/><input type='button' value='↓'/><input type='button' value='→'/><input type='button' id='bigmapBtn' value='大地图'' style='margin-left: '5px'/>";
+
+	//if (heroStatus.length >= 4 && !editor.isMobile) editor.dom.mid2.style.top = 650 + 30 * (heroStatus.length - 3) + 'px';
+	heroStatus.forEach(function (status) {
+		var id = status + 'set',
+			id2 = status + 'add',
+			id3 = status + 'rec',
+			id4 = status + 'help';
+		HTML += "<br/><input type='text' size='15' id='" + id + "'><input type='button' id='" + id2 + "' value = '+'><input type='button' id='" + id3 + "' value = '-'><input type='button' value='?' id = '" + id4 + "'>"
+	});
+	document.getElementById('viewportButtons').innerHTML = HTML;
+	['set', 'add', 'rec', 'help'].forEach(function (e) {
+		heroStatus.forEach(function (status) {
+			editor.dom[status + e] = document.getElementById(status + e);
+		});
+	});
+	var _hasItem = core.items.hasItem;
+	core.items.hasItem = function (itemId) {
+		if (itemId == 'book' && main.mode == 'editor') return true;
+		return _hasItem.call(core.items, itemId);
 	}
+	if (main.mode == "editor") {
+		var applyList = ["getDamageString", "nextCriticals", "getEnemyInfo", "getEnemyValue"];
+		applyList.forEach(function (name) {
+			var func = core.enemys[name];
+			core.enemys[name] = function () {
+				var args = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments));
+				if (typeof args[0] == "string") args[0] = core.enemys.enemys[args[0]];
+				return func.apply(core.enemys, args);
+			}
+		});
+	}
+
+	////// 获得勇士属性 //////
+	core.control.getStatus = function (name) {
+		if (!core.status.hero) return null;
+		if (name == 'x' || name == 'y' || name == 'direction')
+			return this.getHeroLoc(name);
+		/*if ( main.mode == 'editor' && !core.hasFlag('__statistics__')) {
+			return data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d.firstData.hero[name];
+		}*/
+		return core.status.hero[name];
+	}
+
+	core.control.updateDamage = function (floorId, ctx) {
+		floorId = floorId || core.status.floorId;
+		if (!floorId || core.status.gameOver) return;
+		var onMap = ctx == null;
+		if (main.mode == 'editor') {
+			ctx = core.canvas.damage;
+			core.updateCheckBlock();
+			core.clearMap(ctx);
+			if (editor.uivalues.bigmap) return;
+		}
+
+		// 没有怪物手册
+		if (!core.hasItem('book')) return;
+		core.status.damage.posX = core.bigmap.posX;
+		core.status.damage.posY = core.bigmap.posY;
+		if (!onMap) {
+			var width = core.floors[floorId].width,
+				height = core.floors[floorId].height;
+			// 地图过大的缩略图不绘制显伤
+			if (width * height > core.bigmap.threshold) return;
+		}
+		this._updateDamage_damage(floorId, onMap);
+		this._updateDamage_extraDamage(floorId, onMap);
+		this.drawDamage(ctx);
+	}
+
+	core.control.drawDamage = function (ctx) {
+		if (core.status.gameOver || !core.status.damage /* || main.mode != 'play'*/ ) return;
+		var onMap = false;
+		if (ctx == null) {
+			ctx = core.canvas.damage;
+			core.clearMap('damage');
+			onMap = true;
+		}
+
+		if (onMap && core.bigmap.v2) {
+			// 检查是否需要重算...
+			if (Math.abs(core.bigmap.posX - core.status.damage.posX) >= core.bigmap.extend - 1 ||
+				Math.abs(core.bigmap.posY - core.status.damage.posY) >= core.bigmap.extend - 1) {
+				return this.updateDamage();
+			}
+		}
+		return this._drawDamage_draw(ctx, onMap);
+	}
+
+	////// 以x,y的形式返回每个点的事件 //////
+	core.maps.getMapBlocksObj = function (floorId, noCache) {
+		floorId = floorId || core.status.floorId;
+		if (core.status.mapBlockObjs[floorId] && !noCache && main.mode != 'editor')
+			return core.status.mapBlockObjs[floorId];
+
+		var obj = {};
+		core.extractBlocks(floorId);
+		core.status.maps[floorId].blocks.forEach(function (block) {
+			obj[block.x + "," + block.y] = block;
+		});
+		core.status.mapBlockObjs[floorId] = obj
+		return obj;
+	}
+
+	this.bignum = function (num, defaultValue) {
+		if (num == null || num == "") return defaultValue;
+		num = num + "";
+		var list = {
+			'w': 1e4,
+			'e': 1e8,
+			'z': 1e12,
+			'j': 1e16,
+			'g': 1e20
+		};
+		// 浮点数问题
+		function checkFloat(num) {
+			if (!core.isset(num)) return 0;
+			num = num + "";
+			var index = num.indexOf(".");
+			if (index < 0) return 0;
+			else return num.slice(index + 1).length;
+		}
+		var index = num.search(/w|e|z|j|g/);
+		if (index <= 0) {
+			num = parseInt(num);
+			if (core.isset(num)) return num;
+			else {
+				alert('不正确的输入');
+				return defaultValue;
+			}
+		}
+		for (; index > 0; index = num.search(/w|e|z|j|g/)) {
+			var p = num[index],
+				q = list[p],
+				n = num.slice(0, index),
+				m = Math.pow(10, checkFloat(n));
+			num = n * m * q / m + num.slice(index + 1);
+		}
+		return parseInt(num);
+	}
+
+	this.updateEditorDamage = function (noSave) {
+		core.updateDamage();
+		heroStatus.forEach(function (status) {
+			editor.dom[status + 'set'].value = core.status.hero[status];
+		});
+		if (!noSave && editor.saveHero) core.setLocalStorage('editorHero', core.status.hero);
+	}
+
+	var _resizeMap = core.maps.resizeMap;
+	core.maps.resizeMap = function (floorId) {
+		_resizeMap.call(core.maps, floorId);
+		if (!core.plugin.initEditorDamage && main.mode == 'editor') {
+			core.plugin.initEditorDamage = true;
+			var editorHero = core.getLocalStorage('editorHero');
+			if (editorHero && saveHero) core.status.hero = editorHero;
+			else core.removeLocalStorage('editorHero');
+			editor._heroStatus.forEach(function (e) {
+				editor.dom[e + 'set'].onchange = function () {
+					var status = this.id.slice(0, -3);
+					core.status.hero[status] = core.bignum(this.value, core.status.hero[status]);
+					core.updateEditorDamage();
+				}
+				editor.dom[e + 'add'].onclick = function () {
+					var status = this.id.slice(0, -3);
+					core.status.hero[status] += editor.statusRatio;
+					core.updateEditorDamage();
+				}
+				editor.dom[e + 'rec'].onclick = function () {
+					var status = this.id.slice(0, -3);
+					core.status.hero[status] -= editor.statusRatio;
+					core.updateEditorDamage();
+				}
+				editor.dom[e + 'help'].onclick = function () {
+					var status = this.id.slice(0, -4),
+						name = core.getStatusLabel(status);
+					var ratio = parseInt(prompt("当前属性:" + name + "\n现在的点击按钮变化值:" + editor.statusRatio + ",请输入按下一次+/-按钮的属性变化量,可以写4w 10.2e这种字母缩写"));
+					if (!core.isset(ratio)) {
+						printe('不合法的输入');
+						return;
+					}
+					editor.statusRatio = ratio;
+					core.setLocalStorage('statusRatio', ratio);
+				}
+			});
+			var _updateMap = editor.updateMap;
+			editor.updateMap = function () {
+				_updateMap.call(editor);
+				core.updateEditorDamage(true);
+			}
+			editor.mode.onmode = function (mode, callback) {
+				if (editor_mode.mode != mode) {
+					if (mode === 'save') {
+						editor_mode.doActionList(editor_mode.mode, editor_mode.actionList, function () {
+							if (callback) callback();
+							core.updateEditorDamage();
+						});
+					}
+					if (editor_mode.mode === 'nextChange' && mode) editor_mode.showMode(mode);
+					if (mode !== 'save') editor_mode.mode = mode;
+					editor_mode.actionList = [];
+				}
+			}
+		}
+	}
+}
 }

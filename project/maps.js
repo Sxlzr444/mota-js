@@ -237,4 +237,5 @@ var maps_90f36752_8815_4be8_b32b_d7fad1d0542e =
 	"340": {"cls":"items","id":"I340"},
 	"341": {"cls":"items","id":"I341"},
 	"342": {"cls":"items","id":"iodineBottle"},
+	"343": {"cls":"enemys","id":"bleedSlime"}
 }
