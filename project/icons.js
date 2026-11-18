@@ -198,7 +198,8 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"keiskeiFairy": 71,
 		"tulipFairy": 72,
 		"purpleBowman": 65,
-		"bleedSlime": 73
+		"bleedSlime": 73,
+		"mirrorVat": 74
 	},
 	"enemy48": {
 		"angel": 0,
@@ -280,6 +281,7 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"autotile": 0,
 		"autotile1": 0,
 		"autotile2": 0,
-		"autotile3": 0
+		"autotile3": 0,
+		"autotile4": 0
 	}
 }

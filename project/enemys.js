@@ -1,10 +1,10 @@
 var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 = 
 {
-	"greenSlime": {"name":"绿头怪","hp":35,"atk":15,"def":0,"money":0,"exp":0,"point":0,"special":0},
-	"redSlime": {"name":"红头怪","hp":70,"atk":28,"def":5,"money":0,"exp":0,"point":0,"special":[],"value":10},
+	"greenSlime": {"name":"绿头怪","hp":35,"atk":15,"def":0,"money":1,"exp":0,"point":0,"special":0},
+	"redSlime": {"name":"红头怪","hp":70,"atk":28,"def":5,"money":2,"exp":0,"point":0,"special":[],"value":10},
 	"blackSlime": {"name":"青头怪","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"slimelord": {"name":"怪王","hp":100,"atk":120,"def":0,"money":10,"exp":0,"point":0,"special":[1,9]},
-	"bat": {"name":"小蝙蝠","hp":50,"atk":75,"def":1,"money":2,"exp":0,"point":0,"special":[5003]},
+	"bat": {"name":"小蝙蝠","hp":50,"atk":75,"def":1,"money":3,"exp":0,"point":0,"special":[1]},
 	"bigBat": {"name":"大蝙蝠","hp":300,"atk":150,"def":0,"money":0,"exp":0,"point":0,"special":[]},
 	"redBat": {"name":"红蝙蝠","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[]},
 	"vampire": {"name":"冥灵魔王","hp":888,"atk":888,"def":888,"money":888,"exp":888,"point":0,"special":[6],"n":8},
@@ -81,5 +81,6 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"bearLeft": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
 	"bearRight": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
 	"bearUp": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
-	"bleedSlime": {"name":"吸血软泥","hp":120,"atk":45,"def":10,"money":0,"exp":0,"point":0,"special":[5004]}
+	"bleedSlime": {"name":"吸血软泥","hp":120,"atk":30,"def":10,"money":4,"exp":0,"point":0,"special":[5004]},
+	"mirrorVat": {"name":"镜蝠","hp":66,"atk":75,"def":5,"money":6,"exp":0,"point":0,"special":[5003]}
 }

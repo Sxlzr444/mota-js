@@ -2437,5 +2437,171 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	}
+},
+    "gemPointViewer": function () {
+	/* 宝石血瓶左下角显示数值
+	 * 注意！！！不要在道具属性中直接操作flags，使用core.status.hero.flags或core.setFlag系列函数代替！
+	 * 需要将 变量：itemDetail改为true才可正常运行
+	 * 请尽量减少勇士的属性数量，否则可能会出现严重卡顿（划掉，现在你放一万个属性也不会卡）
+	 * 注意：这里的属性必须是core.status.hero里面的，flag无法显示
+	 * 如果不想显示，可以core.setFlag("itemDetail", false);
+	 * 然后再core.getItemDetail();
+	 * 如有bug在大群或造塔群@古祠
+	 */
+
+	// 忽略的道具
+	const ignore = ['superPotion'];
+
+	// 取消注释下面这句可以减少超大地图的判定。
+	// 如果地图宝石过多，可能会略有卡顿，可以尝试取消注释下面这句话来解决。
+	// core.bigmap.threshold = 256;
+	const origin = core.control.updateStatusBar;
+	core.updateStatusBar = core.control.updateStatusBar = function () {
+		if (core.getFlag('__statistics__')) return;
+		else return origin.apply(core.control, arguments);
+	}
+
+	// 注意：这里千万不要直接覆盖 core.control.updateDamage！
+	// 显伤流程是一个"可以被任意插件接管"的函数（本项目的 editorDamageViewer 就在编辑器里接管了它），
+	// 直接整体覆盖会让后加载的插件把先加载的插件顶掉：谁最后执行，谁生效，另一个彻底失效。
+	// 这里改成挂在「伤害数据已算完、但还没绘制」的位置补上宝石数值，两个插件就能共存。
+	const origin_extraDamage = core.control._updateDamage_extraDamage;
+	core.control._updateDamage_extraDamage = function (floorId, onMap) {
+		origin_extraDamage.apply(this, arguments);
+		try {
+			// 直接用插件对象上的方法，避免 core 上的转发函数因同名冲突而未生成
+			if (typeof core.plugin.getItemDetail === 'function') core.plugin.getItemDetail(floorId);
+			else if (typeof core.getItemDetail === 'function') core.getItemDetail(floorId);
+		} catch (e) {
+			console.error('宝石数值显示失败：', e);
+		}
+	};
+
+	// 获取宝石信息 并绘制
+	this.getItemDetail = function (floorId) {
+		// 未显式关闭才显示（老存档里没有这个flag，默认视为开启）
+		if (core.getFlag('itemDetail') === false) return;
+		if (!core.status.damage) return;
+		if (!Array.isArray(core.status.damage.data)) core.status.damage.data = [];
+		const thisMap = core.status.thisMap;
+		floorId = floorId || (thisMap && thisMap.floorId) || core.status.floorId;
+		const map = core.status.maps && core.status.maps[floorId];
+		if (!map || !map.blocks) return;
+		// 绘制非当前楼层时（如大地图缩略图），临时借用该楼层的ratio
+		const beforeRatio = thisMap ? thisMap.ratio : null;
+		if (thisMap && thisMap !== map) thisMap.ratio = map.ratio;
+
+		let diff = {};
+		const before = core.status.hero;
+		const hero = core.clone(core.status.hero);
+		const handler = {
+			set(target, key, v) {
+				const old = target[key];
+				const delta = typeof v === 'number' && typeof old === 'number' ? v - old : 0;
+				target[key] = v; // 必须真正写入，否则连续多次修改（如两次百分比加成）会算错
+				if (delta) diff[key] = (diff[key] || 0) + delta;
+				else if (!diff.hasOwnProperty(key)) diff[key] = void 0;
+				return true;
+			}
+		};
+		core.status.hero = new Proxy(hero, handler);
+		try {
+			map.blocks.forEach(function (block) {
+				if (
+					block.event.cls !== 'items' ||
+					ignore.includes(block.event.id) ||
+					block.disable
+				)
+					return;
+				const x = block.x,
+					y = block.y;
+				// v2优化，只绘制范围内的部分
+				if (core.bigmap.v2) {
+					if (
+						x < core.bigmap.posX - core.bigmap.extend ||
+						x > core.bigmap.posX + core._WIDTH_ + core.bigmap.extend ||
+						y < core.bigmap.posY - core.bigmap.extend ||
+						y > core.bigmap.posY + core._HEIGHT_ + core.bigmap.extend
+					) {
+						return;
+					}
+				}
+				diff = {};
+				const id = block.event.id;
+				const item = core.material.items[id];
+				if (item.cls === 'equips') {
+					// 装备也显示
+					const equipDiff = item.equip.value ?? {};
+					const per = item.equip.percentage ?? {};
+					for (const name in per) {
+						equipDiff[name + 'per'] = per[name].toString() + '%';
+					}
+					drawItemDetail(equipDiff, x, y);
+					return;
+				}
+				// 跟数据统计原理一样 执行效果 前后比较
+				core.setFlag('__statistics__', true);
+				try {
+					eval(item.itemEffect);
+				} catch (error) {}
+				drawItemDetail(diff, x, y);
+			});
+		} finally {
+			// 无论中途是否出错，都必须还原，否则会把真实存档的属性写坏
+			if (thisMap && thisMap !== map) thisMap.ratio = beforeRatio;
+			core.status.hero = before;
+			window.hero = before;
+			window.flags = before.flags;
+		}
+	};
+
+	// 绘制
+	function drawItemDetail(diff, x, y) {
+		const px = 32 * x + 2,
+			py = 32 * y + 30;
+		let content = '';
+		// 获得数据和颜色
+		let i = 0;
+		for (const name in diff) {
+			if (!diff[name]) continue;
+			let color = '#fff';
+
+			if (typeof diff[name] === 'number')
+				content = core.formatBigNumber(diff[name], true);
+			else content = diff[name];
+			switch (name) {
+			case 'atk':
+			case 'atkper':
+				color = '#FF7A7A';
+				break;
+			case 'def':
+			case 'defper':
+				color = '#00E6F1';
+				break;
+			case 'mdef':
+			case 'mdefper':
+				color = '#6EFF83';
+				break;
+			case 'hp':
+				color = '#A4FF00';
+				break;
+			case 'hpmax':
+			case 'hpmaxper':
+				color = '#F9FF00';
+				break;
+			case 'mana':
+				color = '#c66';
+				break;
+			}
+			// 绘制
+			core.status.damage.data.push({
+				text: content,
+				px: px,
+				py: py - 10 * i,
+				color: color
+			});
+			i++;
+		}
+	}
 }
 }

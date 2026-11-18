@@ -1,33 +1,35 @@
 ///<reference path='../runtime.d.ts'/>
 			/**
-			 * 穿刺削减比例函数，按穿刺比例削减防御，结果最小为0。
+			 * 削减比例函数，按比例（0~1）削减防御，结果最小为0。
 			 * @param {number} a 被削减的数值
-			 * @param {number} b 穿刺比例，0~1
+			 * @param {number} b 削减比例，0~1
+			 * @param {boolean} needFlooring 是否需要取整，不填则取整
 			 */
-			let perReduce = (a, b) => {
+			let perReduce = (a, b, needFlooring = true) => {
 				let value = a * (1 - b);
 				if (!(value>0)) value = 0;
-				value = Math.floor(value);
+				if (needFlooring) value = Math.floor(value);
 				return value;								
 			};
 			/**
 			 * 非负减法函数，结果小于0时返回0。
 			 * @param {number} a 被减数
 			 * @param {number} b 减数
+			 * @param {boolean} needFlooring 是否需要取整，不填则取整
 			 */
-			let minusP = (a, b) => {
+			let minusP = (a, b, needFlooring = true) => {
 				let value = a - b;
 				if (!(value>0)) value = 0;
-				value = Math.floor(value);
+				if (needFlooring) value = Math.floor(value);
 				return value;
 			};
 
 			/**
 			 * 目标数如果大于0则取0
 			 * @param {number} a 原来的数
-			 * @param {boolean} needFlooring 是否需要取整，不填则不取整
+			 * @param {boolean} needFlooring 是否需要取整，不填则取整
 			 */
-			let noNeg = (a,needFlooring) => {
+			let noNeg = (a,needFlooring = true) => {
 				if (!(a>0)) return 0;
 				if (needFlooring) a = Math.floor(a);
 				return a;
@@ -636,6 +638,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				[5002, "争先", function (enemy) { return "怪物可选择每回合攻击任意次数，每额外攻击一次，所有攻击伤害降低" + (enemy.costValueForMultiStrikes || "[错误！本技能代价的点数未指定或为0]") + "点，最低为0；怪物会选择总伤害最高的攻击次数。"; }, "#ffee77"],
 				[5003, "双生", "两只相同怪物在同一方格内出现。战斗时，玩家必须依次击败两只怪物，方格内未被击败的所有怪物会同时对玩家发动攻击。", "#9111aa"],
 				[5004, "嗜血", "当玩家流血时，怪物本回合中获得等量的临时生命和攻击力。", "#aa112d"],
+				[5005, "坚韧", function (enemy) { return "怪物受到的所有伤害减少" + (enemy.damegeReducePer ?? enemy.value ?? 0) + "%（结果向下取整）。"; }, "#c8aa15"],
 				[11001,"扣税", function (enemy) { return "经过怪物周围" + (enemy.zoneSquare ? "九宫格" : "十字") + "时需要缴纳" + (enemy.tax ?? 10) + "金币，同时怪物后退一格，如无法缴纳则你死亡。"; }, "#ffdd55"],
 			];
 		},
@@ -1001,9 +1004,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 						/** 通过二次函数顶点公式计算出最优施放次数，未四舍五入 */
 						const BEST_CAST_TIMES_UNROUNDED = (monsterDamage - (1 + extraStrikes) * castCost) / (2 * castCost);
 						/** 最优施放次数向下取整 */
-						const BEST_CAST_TIMES_FLOORED = noNeg(Math.floor(BEST_CAST_TIMES_UNROUNDED));
+						const BEST_CAST_TIMES_FLOORED = noNeg(Math.floor(BEST_CAST_TIMES_UNROUNDED), false);
 						/** 最优施放次数向上取整 */
-						const BEST_CAST_TIMES_CEILED = noNeg(Math.ceil(BEST_CAST_TIMES_UNROUNDED));
+						const BEST_CAST_TIMES_CEILED = noNeg(Math.ceil(BEST_CAST_TIMES_UNROUNDED), false);
 
 						/** 计算使用 castTimes 次数后怪物对玩家造成的伤害
 						 * @param {number} castTimes 怪物使用争先的次数
@@ -1054,7 +1057,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				}
 
 				// 额外攻击次数至少为0，不应为负数，也不应为非整数
-				extraStrikes = noNeg(extraStrikes)>>0;
+				extraStrikes = noNeg(extraStrikes);
 
 				// 应用所有额外攻击次数效果
 				monsterDamage *= 1 + extraStrikes;
@@ -1192,7 +1195,15 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				/** 玩家在当前回合将要造成的伤害。 */
 				heroDealOfThisTurn = minusP(heroInTurn.atk, monInTurn.def);
 
-				// 怪物技能——嗜血，获得临时生命值
+				// 怪物技能——坚韧，百分比减少怪物受到的伤害
+				if (core.hasSpecial(mon.special,5005)) {
+					// 数据按百分数填写（30 表示 30%），在此换算成 0~1 的削减比例
+					let reducePer = (enemyData.damegeReducePer ?? enemyData.value ?? 0)/100;
+					// 削减结果向下取整
+					heroDealOfThisTurn = perReduce(heroDealOfThisTurn, reducePer);
+				}
+
+				// 怪物技能——嗜血，获得临时生命值（坚韧已向下取整，此处也取整即可）
 				if (core.hasSpecial(mon.special,5004)) heroDealOfThisTurn = minusP(heroDealOfThisTurn, vampValue);
 
 				// 未能破防则累计无法破防回合，否则重置计数。

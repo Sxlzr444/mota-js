@@ -343,17 +343,21 @@ enemys.prototype._nextCriticals_useBinarySearch = function (enemy, info, number,
 ////// 临界计算：指数探测 + 小区间二分 //////
 // 步骤：1) 攻击力依次 +1,+2,+4,+8... 找到回合数首次下降的区间；
 //       2) 在该小区间内二分，求出使回合数下降的最小攻击力提升点数；
-//       3) 累计提升超过 mon_hp + mon_def 即中止；伤害未严格下降的怪不给临界；
+//       3) 以"回合数不能再降"为终止条件：回合数触底为 1、或加到一个足够大的上界也不下降即中止；伤害未严格下降的怪不给临界；
 //       4) 沿用引擎约定：未破防怪的第一项用负数表示刚刚破防时的伤害，后续项按破防后的伤害累计减伤。
 enemys.prototype._nextCriticals_useProbe = function (enemy, info, number, x, y, floorId) {
 
     /** @type {number} 玩家当前攻击力 */
     const HERO_ATK = core.status.hero.atk;
 
-    /** @type {number} 二分查找中探测的上界  
-     * 当前规定为怪物HP+防御，如果不对需要修改
+    /** @type {number} 旧的上界：怪物HP+防御  
+     * 坚韧、嗜血等技能会让"每回合有效伤害"不再等于 atk-def，此时这个上界会偏小，  
+     * 所以它现在只作为探测上界的下限使用（保证不会比旧实现更早放弃），不再是终止条件。
     */
     const LIMIT = (info.mon_hp || 0) + (info.mon_def || 0);
+
+    /** @type {number} 探测步长的绝对上限，防止自定义战斗逻辑下攻击力被倍增到不安全整数 */
+    const PROBE_STEP_LIMIT = Number.MAX_SAFE_INTEGER / 4;
     
     /** @type {[number, number][]} [临界点, 减伤] 清单 */
     let list = [];
@@ -370,7 +374,7 @@ enemys.prototype._nextCriticals_useProbe = function (enemy, info, number, x, y, 
     /** @type {number} baseAtk 下的玩家战斗中所受伤害 */
     let baseDamage = info.damage;
 
-    // 未破防 / 打不过时 getDamageInfo 返回 Infinity，此项用负数表示刚破防的伤害
+    /** @type {boolean} 未破防 / 打不过时 getDamageInfo 返回 Infinity，此项用负数表示刚破防的伤害 */
     let over = !Number.isFinite(baseDamage);
 
     // 如果二分探测的上界为0，则临界点约定为0。
@@ -381,6 +385,8 @@ enemys.prototype._nextCriticals_useProbe = function (enemy, info, number, x, y, 
 
     // 同一攻击力的伤害信息会被探测和二分多次用到，缓存起来避免重复模拟整场战斗
     let cache = {};
+
+    /** @type {object} 在玩家攻击力为 atk 点时的怪物手册信息 */
     let infoAt = (atk) => {
         if (atk === HERO_ATK) return info;
         if (Object.prototype.hasOwnProperty.call(cache, atk)) return cache[atk];
@@ -388,11 +394,15 @@ enemys.prototype._nextCriticals_useProbe = function (enemy, info, number, x, y, 
         cache[atk] = (r == null) ? null : r;
         return r;
     };
+
+    /** @type {number} 在玩家攻击力为 atk 点时的战斗回合数 */
     let turnAt = function (atk) {
         let r = infoAt(atk);
         if (r == null || typeof r === 'number') return Infinity;
         return typeof r.turn === 'number' ? r.turn : Infinity;
     };
+
+    /** @type {number} 在玩家攻击力为 atk 点时的玩家所受的战斗伤害 */
     let damageAt = function (atk) {
         let r = infoAt(atk);
         if (r == null) return Infinity;
@@ -401,19 +411,33 @@ enemys.prototype._nextCriticals_useProbe = function (enemy, info, number, x, y, 
     };
 
     while (list.length < number) {
-        // 累计提升点数不得超过怪物 HP + 防御
+        // 旧上界：累计提升点数不得超过怪物 HP + 防御
         let remaining = LIMIT - (baseAtk - HERO_ATK);
-        if (remaining <= 0) break;
+
+        /**
+         * 新的探测上界。坚韧、嗜血等技能会把"每回合有效伤害"的斜率从 1 变成别的值，  
+         * 单靠 HP+防御 已经不能保证"加满就一击必杀"，会漏掉末尾的临界（往往正是无伤临界）。  
+         * 若每回合伤害近似线性于 (atk - def)，把回合数从 baseTurn 压到 1 约需:  
+         * (atk-def)*(baseTurn-1) 点攻击力，这里再留 2 倍余量，与旧上界取较大值。
+         */
+        let est = Math.max(0, baseAtk - (info.mon_def || 0)) * Math.max(0, baseTurn - 1) * 2;
+        let probeCap = Math.max(remaining, est);
+        if (!(probeCap < PROBE_STEP_LIMIT)) probeCap = PROBE_STEP_LIMIT;
+        if (!(probeCap > 0)) break;
 
         // --- 指数探测，定位 (lo, hi] ---
         let lo = 0, hi = null;
         for (let d = 1; ; d *= 2) {
-            let step = Math.min(d, remaining);
-            if (turnAt(baseAtk + step) < baseTurn) { hi = step; break; }
+            let step = Math.min(d, probeCap);
+            let stepTurn = turnAt(baseAtk + step);
+            if (stepTurn < baseTurn) { hi = step; break; }
             lo = step;
-            if (step >= remaining) break;
+            // 回合数已经触底（1 回合），再高的攻击力也不会有新的临界
+            if (!(stepTurn > 1)) break;
+            if (step >= probeCap) break;
+            if (!(d < PROBE_STEP_LIMIT)) break;
         }
-        if (hi == null) break; // 加满上限回合数也不下降，无临界
+        if (hi == null) break; // 回合数不再下降，无临界
 
         // --- 小区间二分，找最小的下降点 ---
         while (hi - lo > 1) {

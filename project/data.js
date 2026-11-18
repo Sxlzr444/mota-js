@@ -7,7 +7,10 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"sample2",
 			"MT0",
 			"MT1",
-			"MT2"
+			"MT2",
+			"MT3",
+			"MT4",
+			"MT5"
 		],
 		"floorPartitions": [],
 		"images": [
@@ -18,7 +21,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"winskin.png"
 		],
 		"tilesets": [
-			"magictower.png"
+			"magictower.png",
 		],
 		"animates": [
 			"hand",
@@ -194,7 +197,9 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 				"x": 6,
 				"y": 12
 			},
-			"flags": {},
+			"flags": {
+				"itemDetail": true
+			},
 			"followers": [],
 			"steps": 0
 		},

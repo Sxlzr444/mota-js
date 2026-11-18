@@ -106,6 +106,7 @@ var maps_90f36752_8815_4be8_b32b_d7fad1d0542e =
 	"136": {"cls":"npc48","id":"npc3","faceIds":{"down":"npc0","left":"npc1","right":"npc2","up":"npc3"},"animate":1},
 	"137": {"cls":"npcs","id":"greenMan"},
 	"138": {"cls":"npcs","id":"blueTrader"},
+	"140": {"cls":"autotile","id":"autotile4"},
 	"151": {"cls":"autotile","id":"autotile1"},
 	"152": {"cls":"autotile","id":"autotile2"},
 	"153": {"cls":"autotile","id":"autotile3"},
@@ -237,5 +238,6 @@ var maps_90f36752_8815_4be8_b32b_d7fad1d0542e =
 	"340": {"cls":"items","id":"I340"},
 	"341": {"cls":"items","id":"I341"},
 	"342": {"cls":"items","id":"iodineBottle"},
-	"343": {"cls":"enemys","id":"bleedSlime"}
+	"343": {"cls":"enemys","id":"bleedSlime"},
+	"344": {"cls":"enemys","id":"mirrorVat"}
 }
