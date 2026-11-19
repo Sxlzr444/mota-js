@@ -17,6 +17,11 @@ editor_materialpanel_wrapper = function (editor) {
         return { 'x': ~~(loc.x / loc.size), 'y': ~~(loc.y / loc.size) };
     }
 
+    var getMaterialHeight = function (image) {
+        if (core.tilesets.indexOf(image) >= 0) return core.icons.getTilesetHeight(image);
+        return image.endsWith('48') ? 48 : 32;
+    }
+
     editor.uifunctions.getScrollBarHeight = function () {
         var outer = document.createElement("div");
         outer.style.visibility = "hidden";
@@ -93,9 +98,18 @@ editor_materialpanel_wrapper = function (editor) {
         editor.uivalues.lastMoveMaterE=e;
         if (!editor.uivalues.startLoc) return;
         var pos0 = locToPos(editor.uivalues.startLoc);
+        var ysize = 32;
+        for (var spriter in editor.widthsX) {
+            if (editor.uivalues.startLoc.x >= editor.widthsX[spriter][1] * 32
+                && editor.uivalues.startLoc.x < editor.widthsX[spriter][2] * 32) {
+                ysize = getMaterialHeight(spriter);
+                pos0.y = ~~(editor.uivalues.startLoc.y / ysize);
+                break;
+            }
+        }
 
         editor.dom.dataSelection.style.left = 32 * pos0.x + 'px';
-        editor.dom.dataSelection.style.top = 32 * pos0.y + 'px';
+        editor.dom.dataSelection.style.top = ysize * pos0.y + 'px';
         editor.dom.dataSelection.style.width = e.clientX - editor.uivalues.startLoc.px + 'px';
         editor.dom.dataSelection.style.height = e.clientY - editor.uivalues.startLoc.py + 'px';
         editor.dom.dataSelection.style.display = 'block';
@@ -124,7 +138,8 @@ editor_materialpanel_wrapper = function (editor) {
         var pos = locToPos(loc);
         for (var spriter in editor.widthsX) {
             if (pos.x >= editor.widthsX[spriter][1] && pos.x < editor.widthsX[spriter][2]) {
-                var ysize = spriter.endsWith('48') ? 48 : 32;
+                var ysize = getMaterialHeight(spriter);
+                pos0.y = ~~(startLoc.y / ysize);
                 loc.ysize = ysize;
                 pos.images = editor.widthsX[spriter][0];
                 pos.y = ~~(loc.y / loc.ysize);
@@ -201,7 +216,7 @@ editor_materialpanel_wrapper = function (editor) {
                             v = v.split(",");
                             var x = parseInt(v[0]), y = parseInt(v[1]);
                             var widthX = editor.widthsX[editor.info.images];
-                            if (x <= 0 || y <= 0 || editor.info.x + x > widthX[2] - widthX[1] || 32*(editor.info.y + y) > widthX[3]) {
+                            if (x <= 0 || y <= 0 || editor.info.x + x > widthX[2] - widthX[1] || ysize*(editor.info.y + y) > widthX[3]) {
                                 alert("不合法的输入范围，已经越界");
                             } else {
                                 editor.uivalues.tileSize = [x, y];

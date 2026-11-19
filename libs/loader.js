@@ -208,8 +208,9 @@ loader.prototype._loadTilesets_afterLoad = function () {
     // 检查宽高是32倍数，如果出错在控制台报错
     for (var imgName in core.material.images.tilesets) {
         var img = core.material.images.tilesets[imgName];
-        if (img.width % 32 != 0 || img.height % 32 != 0) {
-            console.warn("警告！" + imgName + "的宽或高不是32的倍数！");
+        var tileHeight = core.icons.getTilesetHeight(imgName);
+        if (img.width % 32 != 0 || img.height % tileHeight != 0) {
+            console.warn("警告！" + imgName + "的宽不是32的倍数或高不是" + tileHeight + "的倍数！");
         }
         if (img.width * img.height > 32 * 32 * 3000) {
             console.warn("警告！" + imgName + "上的图块素材个数大于3000！");

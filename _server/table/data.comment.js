@@ -69,7 +69,32 @@ var data_comment_c456ea59_6018_45ef_8bcc_211a24c627dc = {
 							previous : current;
 					}).toString(),
 					"_docs": "额外素材",
-					"_data": "在此存放额外素材的图片名, \n可以自定导入任意张素材图片，无需PS，无需注册，即可直接在游戏中使用 \n 形式如[\"1.png\", \"2.png\"] ,将需要的素材图片放在images目录下 \n 素材的宽高必须都是32的倍数，且图片上的总图块数不超过1000（即最多有1000个32*32的图块在该图片上）"
+					"_data": "在此存放额外素材的图片名, \n可以自定导入任意张素材图片，无需PS，无需注册，即可直接在游戏中使用 \n 形式如[\"1.png\", \"2.png\"] ,将需要的素材图片放在tilesets目录下 \n 每格图块为32*32像素；32*48像素的图块请添加到“48像素高额外素材”中"
+				},
+				"tilesets48": {
+					"_leaf": true,
+					"_type": "material",
+					"_range": "editor.mode.checkImages(thiseval, './project/tilesets/')",
+					"_directory": "./project/tilesets/",
+					"_transform": (function (one) {
+						if (one.endsWith('.png'))
+							return one;
+						return null;
+					}).toString(),
+					"_onconfirm": (function (previous, current) {
+						previous = previous || [];
+						current = current.sort(function (a, b) {
+							var i = previous.indexOf(a);
+							var j = previous.indexOf(b);
+							if (i >= 0 && j >= 0) return i - j;
+							return j >= 0 ? 1 : -1;
+						});
+						return core.subarray(current, previous) == null &&
+							!confirm("您修改了现有48像素高额外素材的内容或顺序，这可能导致已经使用的额外素材无法正确显示。确定要修改么？") ?
+							previous : current;
+					}).toString(),
+					"_docs": "48像素高额外素材",
+					"_data": "在此选择每格为32*48像素的额外素材图片。图片需放在project/tilesets目录下，宽度为32的倍数、高度为48的倍数。"
 				},
 				"animates": {
 					"_leaf": true,

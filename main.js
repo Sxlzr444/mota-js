@@ -265,6 +265,7 @@ main.prototype.init = function (mode, callback) {
                     'canvas',
                     'images',
                     'tilesets',
+                    'tilesets48',
                     'materials',
                     'animates',
                     'bgms',
@@ -273,7 +274,14 @@ main.prototype.init = function (mode, callback) {
                     'floors',
                     'floorPartitions'
                 ].forEach(function (t) {
-                    coreData[t] = main[t];
+                    if (t == 'tilesets') {
+                        coreData[t] = main[t].slice();
+                        (main.tilesets48 || []).forEach(function (name) {
+                            if (coreData[t].indexOf(name) < 0) coreData[t].push(name);
+                        });
+                    } else {
+                        coreData[t] = main[t];
+                    }
                 });
                 main.core.init(coreData, callback);
                 main.core.resize();

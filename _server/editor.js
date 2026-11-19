@@ -704,7 +704,8 @@ editor.prototype.updateLastUsedMap = function () {
             var info = lastUsed[i];
             if (!info || !info.images) continue;
             if (info.isTile && core.material.images.tilesets[info.images]) {
-                ctx.drawImage(core.material.images.tilesets[info.images], 32 * info.x, 32 * info.y, 32, 32, x*32, y*32, 32, 32);
+                var tileHeight = core.icons.getTilesetHeight(info.images);
+                ctx.drawImage(core.material.images.tilesets[info.images], 32 * info.x, tileHeight * info.y, 32, tileHeight, x*32, y*32, 32, 32);
             } else if (info.images == 'autotile' && core.material.images.autotile[info.id]) {
                 ctx.drawImage(core.material.images.autotile[info.id], 0, 0, 32, 32, x * 32, y * 32, 32, 32);
             } else {
@@ -998,7 +999,8 @@ editor.prototype.setSelectBoxFromInfo=function(thisevent, scrollTo){
         pos.x=editor.widthsX[thisevent.images][1];
         pos.y=thisevent.y;
         if(thisevent.x)pos.x+=thisevent.x;
-        ysize = thisevent.images.endsWith('48') ? 48 : 32;
+        ysize = core.tilesets.indexOf(thisevent.images) >= 0 ? core.icons.getTilesetHeight(thisevent.images)
+            : thisevent.images.endsWith('48') ? 48 : 32;
         if (editor.uivalues.folded && core.tilesets.indexOf(thisevent.images)==-1) {
             pos.x += Math.floor(pos.y / editor.uivalues.foldPerCol);
             pos.y %= editor.uivalues.foldPerCol;

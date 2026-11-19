@@ -113,10 +113,10 @@ editor_game_wrapper = function (editor, main, core) {
         for (var i in core.tilesets) {
             var imgName = core.tilesets[i];
             var img = core.material.images.tilesets[imgName];
-            var width = Math.floor(img.width / 32), height = Math.floor(img.height / 32);
-            if (img.width % 32 || img.height % 32) {
-                // alert(imgName + '的长或宽不是32的整数倍, 请修改后刷新页面');
-                console.warn(imgName + '的长或宽不是32的整数倍, 请修改后刷新页面');
+            var tileHeight = core.icons.getTilesetHeight(imgName);
+            var width = Math.floor(img.width / 32), height = Math.floor(img.height / tileHeight);
+            if (img.width % 32 || img.height % tileHeight) {
+                console.warn(imgName + '的宽不是32的整数倍或高不是' + tileHeight + '的整数倍, 请修改后刷新页面');
             }
             if (img.width * img.height > 32 * 32 * 3000) {
                 // alert(imgName + '上的图块数量超过了3000，请修改后刷新页面');

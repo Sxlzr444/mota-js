@@ -48,6 +48,10 @@ icons.prototype._getAnimateFrames = function (cls) {
     return 1;
 }
 
+icons.prototype.getTilesetHeight = function (image) {
+    return (core.tilesets48 || []).indexOf(image) >= 0 ? 48 : 32;
+}
+
 ////// 根据图块数字或ID获得所在的tileset和坐标信息 //////
 icons.prototype.getTilesetOffset = function (id) {
 
@@ -66,10 +70,11 @@ icons.prototype.getTilesetOffset = function (id) {
     for (var i in core.tilesets) {
         var imgName = core.tilesets[i];
         var img = core.material.images.tilesets[imgName];
-        var width = Math.floor(parseInt(img.getAttribute('_width')) / 32), height = Math.floor(parseInt(img.getAttribute('_height')) / 32);
+        var tileHeight = this.getTilesetHeight(imgName);
+        var width = Math.floor(parseInt(img.getAttribute('_width')) / 32), height = Math.floor(parseInt(img.getAttribute('_height')) / tileHeight);
         if (id >= startOffset && id < startOffset + width * height) {
             var x = (id - startOffset) % width, y = parseInt((id - startOffset) / width);
-            return { "image": imgName, "x": x, "y": y };
+            return { "image": imgName, "x": x, "y": y, "height": tileHeight };
         }
         startOffset += this.tilesetStartOffset;
     }

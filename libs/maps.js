@@ -251,6 +251,10 @@ maps.prototype._addInfo = function (block) {
     block.event.height = 32;
     if (block.event.cls == 'enemy48' || block.event.cls == 'npc48')
         block.event.height = 48;
+    else if (block.event.cls == 'tileset') {
+        var tileset = core.icons.getTilesetOffset(block.event.id);
+        if (tileset) block.event.height = tileset.height;
+    }
 }
 
 ////// 向该楼层添加剧本的自定义事件 //////
@@ -1980,6 +1984,7 @@ maps.prototype.getBlockInfo = function (block) {
         if (offset == null) return null;
         posX = offset.x;
         posY = offset.y;
+        height = offset.height;
         image = core.material.images.tilesets[offset.image];
     }
     else if (cls == 'autotile') {
