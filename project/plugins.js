@@ -315,7 +315,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				return false;
 			}
 
-			/** 在状态栏上显示流血状态和数字 */
+
+			// ---------- 显示方法 ----------
+			/** 在状态栏上显示流血状态和数字  
+			 * 添加至functions.js/control.updateStatusBar中“破炸飞”后面使用
+			*/
 			brushNewDisplay() {
 				// 没显示debuff状态栏，此方法不执行
 				// HP右上角小字和底部流血状态都不会显示
@@ -343,6 +347,45 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					else {
 						if (core.statusBar.bleedNextDamage) core.statusBar.bleedNextDamage.style.display = "none"; // 不存在则不显示
 						core.setStatusBarInnerHTML("bleed", "" , "color: #FF8888");}
+				return true;
+			}
+
+			/** 在自绘状态栏的生命值右上角显示下一回合的流血伤害   
+			 * 添加至functions.js/control.ui.drawStatusBar的最后一行使用。  
+			 * 只在玩家开启自绘状态栏时有效  
+			 * 本插件作者不会Canvas，应该不会用到了。  
+			*/
+			brushNewDisplayOnCanvas() {
+				if (!this.isBleeding()) return false;
+
+				let ctx, x, y;
+				if (core.flags.statusCanvas) {
+					if (core.domStyle.isVertical) {
+						ctx = core.dom.statusCanvasCtx;
+						x = 173;
+						y = 26;
+					} else if (!core.flags.hideLeftStatusBar) {
+						ctx = core.dom.statusCanvasCtx;
+						x = 42;
+						y = 63;
+					} else {
+						return false;
+					}
+				} else if (core.flags.hideLeftStatusBar && !core.domStyle.isVertical) {
+					ctx = core.dymCanvas['status'];
+					if (!ctx) return false;
+					let offset = core.status.hero.loc.x - core.bigmap.offsetX / 32 >= core._HEIGHT_ ? 0 : core._PY_;
+					x = 42 + offset;
+					y = 63;
+				} else {
+					return false;
+				}
+
+				let hpText = core.formatBigNumber(core.getRealStatus('hp'));
+				core.ui.setFont(ctx, (/\w+/.test(hpText) ? 'italic ' : '') + 'bold 18px Verdana');
+				let textWidth = ctx.measureText(hpText).width;
+				core.ui.setFont(ctx, 'bold 11px Verdana');
+				core.ui.fillBoldText(ctx, "-" + core.formatBigNumber(this.nextTurnDealt), x + textWidth + 2, y - 8, '#FF8888');
 				return true;
 			}
 

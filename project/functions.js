@@ -2187,15 +2187,6 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				core.ui.setFont(ctx, (/\w+/.test(text) ? 'italic ' : '') + 'bold 18px Verdana');
 				core.ui.fillBoldText(ctx, text, x, y, style);
 			};
-			/** 自绘状态栏/隐藏状态栏时 #hp 行被隐藏，DOM 小字不可见，改在生命数值右上角画一处 canvas 小字。
-			 * 位置以 fill() 刚设置的 18px 字体量出的数值宽度为基准，数值变长时小字会跟着右移。 */
-			let fillBleedDamage = function (x, y) {
-				if (!core.plugin.bleed || !core.plugin.bleed.isBleeding()) return;
-				let hpText = core.formatBigNumber(core.getRealStatus('hp'));
-				let textWidth = ctx.measureText(hpText).width; // 此时 ctx.font 仍是 fill() 设置的 18px
-				core.ui.setFont(ctx, 'bold 11px Verdana');
-				core.ui.fillBoldText(ctx, "-" + core.formatBigNumber(core.plugin.bleed.nextTurnDealt), x + textWidth + 2, y - 8, '#FF8888');
-			};
 			if (core.flags.statusCanvas) { // 系统开关「自绘状态栏」开启
 				core.ui.clearMap(ctx = core.dom.statusCanvasCtx); // 清空状态栏
 				core.ui.setFillStyle(ctx, core.status.globalAttribute.statusBarColor);
@@ -2204,7 +2195,6 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 					fill((core.status.thisMap || {}).name || "Loading", 42, 26);
 					core.drawImage(ctx, core.statusBar.icons.hp, 137, 6, 25, 25);
 					fill(core.formatBigNumber(core.getRealStatus('hp')), 173, 26);
-					fillBleedDamage(173, 26);
 					core.drawImage(ctx, core.statusBar.icons.atk, 268, 6, 25, 25);
 					fill(core.formatBigNumber(core.getRealStatus('atk')), 304, 26);
 					core.drawImage(ctx, core.statusBar.icons.def, 6, 38, 25, 25);
@@ -2220,7 +2210,6 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 					fill((core.status.thisMap || {}).name || "Loading", 42, 29);
 					core.drawImage(ctx, core.statusBar.icons.hp, 6, 43, 25, 25);
 					fill(core.formatBigNumber(core.getRealStatus('hp')), 42, 63);
-					fillBleedDamage(42, 63);
 					core.drawImage(ctx, core.statusBar.icons.atk, 6, 77, 25, 25);
 					fill(core.formatBigNumber(core.getRealStatus('atk')), 42, 97);
 					core.drawImage(ctx, core.statusBar.icons.def, 6, 111, 25, 25);
@@ -2248,7 +2237,6 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				fill((core.status.thisMap || {}).name || "Loading", 42 + offset, 29);
 				core.drawImage(ctx, core.statusBar.icons.hp, 6 + offset, 43, 25, 25);
 				fill(core.formatBigNumber(core.getRealStatus('hp')), 42 + offset, 63);
-				fillBleedDamage(42 + offset, 63);
 				core.drawImage(ctx, core.statusBar.icons.atk, 6 + offset, 77, 25, 25);
 				fill(core.formatBigNumber(core.getRealStatus('atk')), 42 + offset, 97);
 				core.drawImage(ctx, core.statusBar.icons.def, 6 + offset, 111, 25, 25);
@@ -2263,6 +2251,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				fill(core.setTwoDigits(core.itemCount('blueKey')), 46 + offset, 267, '#AAAADD');
 				fill(core.setTwoDigits(core.itemCount('redKey')), 81 + offset, 267, '#FF8888');
 			}
+			core.plugin.bleed.brushNewDisplayOnCanvas();
 		},
 		"drawStatistics": function () {
 			// 浏览地图时参与的统计项目
