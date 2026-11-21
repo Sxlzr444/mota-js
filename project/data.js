@@ -10,7 +10,9 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"MT2",
 			"MT3",
 			"MT4",
-			"MT5"
+			"MT5",
+			"MT6",
+			"MT7"
 		],
 		"floorPartitions": [],
 		"images": [
@@ -21,7 +23,11 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"winskin.png"
 		],
 		"tilesets": [
-			"magictower.png"
+			"magictower.png",
+			"mori2.png",
+			"mori.png",
+			"city4.png",
+			"city2.png"
 		],
 		"tilesets48": [
 			"obstacle1_9.png"
@@ -178,7 +184,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"hero": {
 			"image": "hero.png",
 			"animate": false,
-			"name": "雷绍武",
+			"name": "神人",
 			"lv": 1,
 			"hpmax": 9007199254740991,
 			"hp": 800,
@@ -738,7 +744,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"weakValue": 20,
 		"redGem": 2,
 		"blueGem": 2,
-		"greenGem": 5,
+		"greenGem": 4,
 		"redPotion": 100,
 		"bluePotion": 250,
 		"yellowPotion": 500,

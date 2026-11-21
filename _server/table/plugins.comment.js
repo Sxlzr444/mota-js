@@ -74,7 +74,19 @@ var plugins_comment_c456ea59_6018_45ef_8bcc_211a24c627dc = {
 				"_type": "textarea",
 				"_range": "typeof(thiseval)=='string' || thiseval==null",
 				"_data": "整数输入面板美化"
-			}
+			},
+			"bleed": {
+				"_leaf": true,
+				"_type": "textarea",
+				"_range": "typeof(thiseval)=='string' || thiseval==null",
+				"_data": "流血效果"
+			},
+			"_discarded_bleed": {
+				"_leaf": true,
+				"_type": "textarea",
+				"_range": "typeof(thiseval)=='string' || thiseval==null",
+				"_data": "【已弃用】旧版流血效果"
+			},
 		}
 		if (obj[key]) return obj[key];
 		return {

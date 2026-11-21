@@ -82,5 +82,6 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"bearRight": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
 	"bearUp": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
 	"bleedSlime": {"name":"吸血软泥","hp":120,"atk":30,"def":10,"money":4,"exp":0,"point":0,"special":[5004]},
-	"mirrorVat": {"name":"镜蝠","hp":66,"atk":75,"def":5,"money":6,"exp":0,"point":0,"special":[5003]}
+	"mirrorVat": {"name":"镜蝠","hp":66,"atk":75,"def":5,"money":6,"exp":0,"point":0,"special":[5003]},
+	"glueMon": {"name":"胶质怪","hp":80,"atk":33,"def":12,"money":3,"exp":0,"point":0,"special":[5005],"value":50}
 }

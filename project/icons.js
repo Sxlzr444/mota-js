@@ -199,7 +199,8 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"tulipFairy": 72,
 		"purpleBowman": 65,
 		"bleedSlime": 73,
-		"mirrorVat": 74
+		"mirrorVat": 74,
+		"glueMon": 75
 	},
 	"enemy48": {
 		"angel": 0,
