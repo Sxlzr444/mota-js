@@ -1549,10 +1549,12 @@ declare class enemys {
         mon_atk: number
         mon_def: number
         initDealt: number
-        heroDealtOfThisTurn: number
-        heroDealOfThisTurn: number
         turn: number
         damage: number
+        monHpLeft: number | undefined
+        twinReviveUsed: boolean | undefined
+        extraDealt: number
+        spireTurnDealt: number | undefined
         [x: string]: any
     }
 }

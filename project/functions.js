@@ -452,6 +452,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				core.triggerDebuff('get', 'curse');
 			}
 
+			// 尖刺造成流血效果
+			if (core.enemys.hasSpecial(special, 5006)) core.plugin.bleed.add( damageInfo.spireTurnDealt, null );
 
 			// 战后的技能处理，比如扣除魔力值
 			if (core.flags.statusBarItems.indexOf('enableSkill') >= 0) {
@@ -1086,12 +1088,11 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 					"mon_atk": Math.floor(mon.atk),
 					"mon_def": Math.floor(mon.def),
 					"initDealt": 0,
-					//"heroDealtOfThisTurn": 0, 新版逻辑不支持
-					//"heroDealOfThisTurn": 0, 新版逻辑不支持
 					"turn": 0,
 					"damage": Infinity,
 					"extraDealt": extraDamage,
 					"bleed": hero.bleed.logs,
+					"spireTurnDealt": (core.hasSpecial(mon.special, 5006)) ? spireTurnDealt : void 0,
 				};
 			}
 
@@ -1143,11 +1144,23 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			}
 			*/
 
-			// 怪物技能——先攻；在勇士第一次攻击前结算。
+			// 怪物技能——尖刺：调用先攻造成的伤害作为流血的每回合伤害
+			/** 尖刺的回合伤害，初始为 0 */
+			let spireTurnDealt = 0;
+
+			// 怪物技能——先攻：在勇士第一次攻击前结算。
 			if (core.hasSpecial(mon.special, 1)) {
 				let firstStrike = calTurnDealt();
+
+				// 如果已经在先攻结算中调用了怪物的先攻伤害，则使用之，不重复调用以节省性能。
+				if (core.hasSpecial(mon.special, 5006)) spireTurnDealt = firstStrike;
+
 				initDealt += firstStrike;
 			}
+
+				// 如果没有先攻，则正常调用 calTurnDealt() 结算尖刺的回合伤害。
+				if (!core.hasSpecial(mon.special, 1) && core.hasSpecial(mon.special, 5006)) spireTurnDealt = calTurnDealt();
+
 			// 破甲和净化均在战斗开始时造成伤害。
 			// 怪物技能——破甲
 			if (core.hasSpecial(mon.special, 7)) {
@@ -1274,8 +1287,6 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				"mon_atk": Math.floor(mon.atk),
 				"mon_def": Math.floor(mon.def),
 				"initDealt": Math.floor(initDealt),
-				//"heroDealtOfThisTurn": Math.floor(heroDealtOfThisTurn), 新版逻辑不支持
-				//"heroDealOfThisTurn": Math.floor(heroDealOfThisTurn), 新版逻辑不支持
 				"turn": turn,
 				"damage": Math.floor(damage),
 				/**如果怪物有哈气技能（能脱战逃跑）且未被直接杀死，返回脱战时剩余的HP，否则此项为未定义*/
@@ -1289,6 +1300,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 					: twinActived!==true ? true : false,
 				"extraDealt": extraDamage,				
 				"bleed": hero.bleed.logs,
+				"spireTurnDealt": (core.hasSpecial(mon.special, 5006)) ? spireTurnDealt : void 0,
 			};
 		}
 	},

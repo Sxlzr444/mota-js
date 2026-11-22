@@ -27,7 +27,9 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"mori2.png",
 			"mori.png",
 			"city4.png",
-			"city2.png"
+			"city2.png",
+			"house_red_128.png",
+			"house_blue_128.png",
 		],
 		"tilesets48": [
 			"obstacle1_9.png"

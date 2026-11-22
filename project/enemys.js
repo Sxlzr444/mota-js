@@ -30,7 +30,7 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"skeletonKing": {"name":"骷髅王","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"evilHero": {"name":"迷失勇者","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"demonPriest": {"name":"魔神法师","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
-	"goldHornSlime": {"name":"金角怪","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
+	"goldHornSlime": {"name":"金角怪","hp":45,"atk":77,"def":5,"money":0,"exp":0,"point":0,"special":[5006],"spireTurns":5},
 	"silverSlime": {"name":"银头怪","hp":100,"atk":120,"def":0,"money":15,"exp":0,"point":0,"special":14},
 	"whiteHornSlime": {"name":"尖角怪","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"redSwordsman": {"name":"剑王","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[]},

@@ -181,11 +181,11 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"equip": {
 			"type": 1,
 			"value": {
-				"def": 0
+				"def": 5
 			}
 		},
-		"itemEffect": "core.status.hero.def += 0",
-		"itemEffectTip": "，防御+0"
+		"itemEffect": "core.status.hero.def += 5",
+		"itemEffectTip": "，防御+5"
 	},
 	"shield1": {
 		"cls": "items",

@@ -5,9 +5,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 本函数将在所有资源加载完毕后，游戏开启前被执行
 		}
 	},
-    "_discarded_bleed": function () {
-		return false;
 
+    "_discarded_bleed": function () { return false;
 		/**
 		 * 一条流血效果的记录
 		 * @typedef {Object} bleedLog
@@ -174,7 +173,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		};
 		this.bleed = createBleed(null);
 	},
-    "bleed": function () {
+    
+	"bleed": function () {
 		// 重要！如果游戏中出现了数值特别大的情况，需要写入超过2^53-1的数值，这里不支持，自求多福吧！ //
 		/** 因为 Infinity 在存档中会JSONfy为null，这里使用这个特殊的数字。  
 		 * 因为JS神奇的特性，它减1还是它自身。  
@@ -258,7 +258,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			set nextTurnDealt(v) { Bleed.#readonlyWarn(); }
 
-			// ---------- 方法 ----------
+			// ---------- 操作方法 ----------
 			isBleeding() { return this.#getLogs().length > 0; }
 
     		reduceOneTurn() {

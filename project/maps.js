@@ -240,5 +240,6 @@ var maps_90f36752_8815_4be8_b32b_d7fad1d0542e =
 	"342": {"cls":"items","id":"iodineBottle"},
 	"343": {"cls":"enemys","id":"bleedSlime"},
 	"344": {"cls":"enemys","id":"mirrorVat"},
-	"345": {"cls":"enemys","id":"glueMon"}
+	"345": {"cls":"enemys","id":"glueMon"},
+	"60000": {"cls":"tileset","id":"X60000","canPass":true}
 }
