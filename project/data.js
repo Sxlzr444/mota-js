@@ -12,7 +12,8 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"MT4",
 			"MT5",
 			"MT6",
-			"MT7"
+			"MT7",
+			"MT8"
 		],
 		"floorPartitions": [],
 		"images": [
@@ -29,7 +30,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"city4.png",
 			"city2.png",
 			"house_red_128.png",
-			"house_blue_128.png",
+			"house_blue_128.png"
 		],
 		"tilesets48": [
 			"obstacle1_9.png"
@@ -574,6 +575,11 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			{
 				"type": "setValue",
 				"name": "item:book",
+				"value": "1"
+			},
+			{
+				"type": "setValue",
+				"name": "item:fly",
 				"value": "1"
 			},
 			"Hi，欢迎来到 HTML5 魔塔样板！\n\n本样板由艾之葵制作，可以让你在不会写任何代码\n的情况下也能做出属于自己的H5魔塔！",
