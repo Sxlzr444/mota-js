@@ -34,7 +34,20 @@
 				if (needFlooring) a = Math.floor(a);
 				return a;
 			}
-var tools = {perReduce,minusP,noNeg};
+
+			/** 字符串变色函数
+			 * @param {string} text		原字符
+			 * @param {string} colour	要显示的颜色
+			 * @returns {string}		涂色后的字符串
+			 */
+			let colour = (text, colour) => {
+				/** 拼接带颜色转义的字符串 */
+				let colouredText = "\\r[" + colour + "]"	//这步先拼好\\r[colour]设置的颜色
+				colouredText += text;						//拼接想要变色的文本
+				colouredText += "\\r[]";					//再加上\\r[]取消变色
+				return colouredText;
+			}
+var tools = {perReduce, minusP, noNeg, colour};
 
 var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 {				
@@ -296,14 +309,14 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		"afterBattle": function (enemyId, x, y) {
 			// 战斗结束后触发的事件
 
-			var enemy = core.material.enemys[enemyId];
-			var special = enemy.special;
+			let enemy = core.material.enemys[enemyId];
+			let special = enemy.special;
 
 			// 播放战斗音效和动画
 			// 默认播放的动画；你也可以使用
-			var animate = 'hand'; // 默认动画
+			let animate = 'hand'; // 默认动画
 			// 检查当前装备是否存在攻击动画
-			var equipId = core.getEquip(0);
+			let equipId = core.getEquip(0);
 			if (equipId && (core.material.items[equipId].equip || {}).animate)
 				animate = core.material.items[equipId].equip.animate;
 			// 你也可以在这里根据自己的需要，比如enemyId或special或flag来修改播放的动画效果
@@ -320,7 +333,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				core.drawHeroAnimate(animate);
 
 			// 获得战斗伤害信息
-			var damageInfo = core.getDamageInfo(enemyId, null, x, y) || {};
+			let damageInfo = core.getDamageInfo(enemyId, null, x, y) || {};
+
+			let spireTurns = core.getEnemyValue(enemyId, "spireTurns", x, y) ?? void 0;
 
 			// 伤害计算全程只操作模拟副本；只有这里（真实战斗结算）才把战后流血状态写回真实 bleed 对象。
 			// 手册、临界表、能否获胜等调用会丢弃返回值中的 bleed 字段，存档不受影响。
@@ -335,9 +350,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 			//console.log(monHpLeft); 
 			// 战斗伤害
-			var damage = damageInfo.damage;
+			let damage = damageInfo.damage;
 			// 当前战斗回合数，可用于战后所需的判定
-			var turn = damageInfo.turn;
+			let turn = damageInfo.turn;
 			// 判定是否致死
 			if (damage == null || damage >= core.status.hero.hp) {
 				core.status.hero.hp = 0;
@@ -356,7 +371,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			let hasHissing = core.hasSpecial(special, 5001) && (monHpLeft>0) && x != null && y != null;
 
 			// 计算当前怪物的支援怪物
-			var guards = [];
+			let guards = [];
 			if (x != null && y != null) {
 				guards = core.getFlag("__guards__" + x + "_" + y, []);
 				core.removeFlag("__guards__" + x + "_" + y);
@@ -364,7 +379,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 
 			// 事件的处理
-			var todo = [];
+			let todo = [];
 
 			/** 是否真正被击杀
 			 * 只有没有逃跑时才会计算战后事件
@@ -453,7 +468,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			}
 
 			// 尖刺造成流血效果
-			if (core.enemys.hasSpecial(special, 5006)) core.plugin.bleed.add( damageInfo.spireTurnDealt, null );
+			if (core.enemys.hasSpecial(special, 5006)) {
+				core.plugin.bleed.add(spireTurns, damageInfo.spireTurnDealt);
+			}
 
 			// 战后的技能处理，比如扣除魔力值
 			if (core.flags.statusBarItems.indexOf('enableSkill') >= 0) {
@@ -641,7 +658,17 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				[5003, "双生", "两只相同怪物在同一方格内出现。战斗时，玩家必须依次击败两只怪物，方格内未被击败的所有怪物会同时对玩家发动攻击。", "#9111aa"],
 				[5004, "嗜血", "当玩家流血时，怪物本回合中获得等量的临时生命和攻击力。", "#aa112d"],
 				[5005, "坚韧", function (enemy) { return "怪物受到的所有伤害减少" + (enemy.damegeReducePer ?? enemy.value ?? 0) + "%（结果向下取整）。"; }, "#c8aa15"],
-				[11001,"扣税", function (enemy) { return "经过怪物周围" + (enemy.zoneSquare ? "九宫格" : "十字") + "时需要缴纳" + (enemy.tax ?? 10) + "金币，同时怪物后退一格，如无法缴纳则你死亡。"; }, "#ffdd55"],
+				[5006, "尖刺", function (enemy) {
+					/** 怪物信息 */
+    				let info = null;
+    				try { info = core.getDamageInfo(enemy, null); } catch (e) { info = null; }
+					/** 尖刺每回合造成的流血伤害，由怪物和玩家属性经过 getDamageInfo 动态计算 */
+    				let dealt = info && info.spireTurnDealt; 
+					dealt = colour(dealt, "#aa1111");
+					/** 尖刺造成的流血回合数，从怪物属性 enemy.spireTurns 中读取 */
+    				let turns = enemy.spireTurns ?? enemy.value ?? 0;
+				    return "战斗后怪物对玩家造成" + turns + "回合的流血伤害，每回合造成" + dealt + "点伤害（等同于怪物1回合对玩家造成的伤害）。";}, "#a0522d"],
+				[11001, "扣税", function (enemy) { return "经过怪物周围" + (enemy.zoneSquare ? "九宫格" : "十字") + "时需要缴纳" + (enemy.tax ?? 10) + "金币，同时怪物后退一格，如无法缴纳则你死亡。"; }, "#ffdd55"],
 			];
 		},
 		"getEnemyInfo": function (enemy, heroData, x, y, floorId) {
@@ -1075,6 +1102,10 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	
 			};
 
+			// 怪物技能——尖刺：调用先攻造成的伤害作为流血的每回合伤害
+			/** 尖刺的回合伤害，初始为 0 */
+			let spireTurnDealt = 0;
+			
 			/** 计算玩家当前回合对怪物造成的伤害。 */
 			//let calTurnDeal = () => {
 			//	return null;
@@ -1144,15 +1175,11 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			}
 			*/
 
-			// 怪物技能——尖刺：调用先攻造成的伤害作为流血的每回合伤害
-			/** 尖刺的回合伤害，初始为 0 */
-			let spireTurnDealt = 0;
-
 			// 怪物技能——先攻：在勇士第一次攻击前结算。
 			if (core.hasSpecial(mon.special, 1)) {
 				let firstStrike = calTurnDealt();
 
-				// 如果已经在先攻结算中调用了怪物的先攻伤害，则使用之，不重复调用以节省性能。
+				// 如果已经在先攻结算中调用了怪物的先攻伤害，则使用之，不重复调用。
 				if (core.hasSpecial(mon.special, 5006)) spireTurnDealt = firstStrike;
 
 				initDealt += firstStrike;
