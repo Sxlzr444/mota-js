@@ -3100,7 +3100,8 @@ ui.prototype._drawSLPanel_drawRecord = function (title, data, x, y, size, cho, h
     var w = size * core._PX_, h = size * core._PY_;
     core.fillText('ui', title, x, y, highLight ? globalAttribute.selectColor : '#FFFFFF', this._buildFont(17, true));
     core.strokeRect('ui', x - w / 2, y + 15, w, h, cho ? strokeColor : '#FFFFFF', cho ? 3 : 1);
-    if (data && data.floorId) {
+    // 新建兜底机制，避免加载不存在的旧档案时报错
+    if (data && data.floorId && core.floors[data.floorId]) {
         core.setTextAlign('ui', "center");
         var map = core.maps.loadMap(data.maps, data.floorId);
         core.extractBlocksForUI(map, data.hero.flags);

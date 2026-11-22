@@ -49,6 +49,13 @@ maps.prototype._setHDCanvasSize = function (ctx, width, height) {
 ////// 加载某个楼层（从剧本或存档中） //////
 maps.prototype.loadFloor = function (floorId, map) {
     var floor = core.floors[floorId];
+
+    // 如果没有此楼层，则进行警告，但不直接抛错。
+    if (!floor) {
+    console.warn('[maps] 楼层不存在，可能来自已删除/改名的楼层：', floorId);
+    return null;
+    }
+    
     if (!map) map = core.cloneArray(floor.map);
     if (map instanceof Array) {
         map = { "map": map };
