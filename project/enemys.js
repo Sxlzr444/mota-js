@@ -30,7 +30,7 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"skeletonKing": {"name":"骷髅王","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"evilHero": {"name":"迷失勇者","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"demonPriest": {"name":"魔神法师","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
-	"goldHornSlime": {"name":"尖角怪","hp":45,"atk":40,"def":16,"money":0,"exp":0,"point":0,"special":[5006],"spireTurns":5,"description":"[作者提示]当不能防杀时，攻杀此怪物仍然会使玩家受到流血效果！"},
+	"goldHornSlime": {"name":"尖角怪","hp":45,"atk":40,"def":16,"money":0,"exp":0,"point":0,"special":[5006],"spireTurns":8,"description":"[作者提示]当不能防杀时，攻杀此怪物仍然会使玩家受到流血效果！"},
 	"silverSlime": {"name":"银头怪","hp":100,"atk":120,"def":0,"money":15,"exp":0,"point":0,"special":14},
 	"whiteHornSlime": {"name":"尖角怪","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"redSwordsman": {"name":"剑王","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[]},
@@ -82,6 +82,6 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"bearRight": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
 	"bearUp": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
 	"bleedSlime": {"name":"吸血软泥","hp":120,"atk":30,"def":10,"money":4,"exp":0,"point":0,"special":[5004]},
-	"mirrorVat": {"name":"镜蝠","hp":66,"atk":75,"def":5,"money":6,"exp":0,"point":0,"special":[5003]},
+	"mirrorVat": {"name":"镜蝠","hp":66,"atk":66,"def":5,"money":6,"exp":0,"point":0,"special":[5003]},
 	"glueMon": {"name":"胶质怪","hp":80,"atk":33,"def":12,"money":3,"exp":0,"point":0,"special":[5005],"value":50}
 }
