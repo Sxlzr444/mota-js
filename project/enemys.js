@@ -2,7 +2,7 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 {
 	"greenSlime": {"name":"绿头怪","hp":35,"atk":15,"def":0,"money":1,"exp":0,"point":0,"special":0},
 	"redSlime": {"name":"红头怪","hp":70,"atk":28,"def":5,"money":2,"exp":0,"point":0,"special":[],"value":10},
-	"blackSlime": {"name":"青头怪","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
+	"blackSlime": {"name":"青头怪","hp":250,"atk":36,"def":15,"money":0,"exp":0,"point":0,"special":0},
 	"slimelord": {"name":"怪王","hp":100,"atk":120,"def":0,"money":10,"exp":0,"point":0,"special":[1,9]},
 	"bat": {"name":"小蝙蝠","hp":50,"atk":75,"def":1,"money":3,"exp":0,"point":0,"special":[1]},
 	"bigBat": {"name":"大蝙蝠","hp":300,"atk":150,"def":0,"money":0,"exp":0,"point":0,"special":[]},
@@ -78,10 +78,12 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"tulipFairy": {"name":"郁金香花妖","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"purpleBowman": {"name":"高级弓兵","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":0},
 	"bearDown": {"name":"神人·石狩野人","hp":380,"atk":135,"def":75,"money":0,"exp":0,"point":0,"special":[1,5001,5002],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"},"bigImage":"bear.png","costValueForMultiStrikes":10,"hissValue":60},
-	"bearLeft": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
-	"bearRight": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
-	"bearUp": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearDown","left":"bearLeft","right":"bearRight","up":"bearUp"}},
+	"bearLeft": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearLeft","left":"bearRight","right":"bearUp","up":"E346"}},
+	"bearRight": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearRight","left":"bearUp","right":"arrowGuard","up":"E347"}},
+	"bearUp": {"name":"熊出没","hp":0,"atk":0,"def":0,"money":0,"exp":0,"point":0,"special":[],"faceIds":{"down":"bearRight","left":"bearUp","right":"arrowGuard","up":"E347"}},
 	"bleedSlime": {"name":"吸血软泥","hp":120,"atk":30,"def":10,"money":4,"exp":0,"point":0,"special":[5004]},
 	"mirrorVat": {"name":"镜蝠","hp":66,"atk":66,"def":5,"money":6,"exp":0,"point":0,"special":[5003]},
-	"glueMon": {"name":"胶质怪","hp":80,"atk":33,"def":12,"money":3,"exp":0,"point":0,"special":[5005],"value":50}
+	"glueMon": {"name":"胶质怪","hp":80,"atk":33,"def":12,"money":3,"exp":0,"point":0,"special":[5005],"value":50},
+	"arrowGuard": {"name":"持弓镖人","hp":120,"atk":175,"def":0,"money":0,"exp":0,"point":0,"special":[5007],"faceIds":null,"value":60},
+	"DireGuard": {"name":"带盾镖人","hp":250,"atk":40,"def":20,"money":0,"exp":0,"point":0,"special":[5005],"faceIds":null,"value":60}
 }

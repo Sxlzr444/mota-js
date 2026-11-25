@@ -227,7 +227,7 @@ var maps_90f36752_8815_4be8_b32b_d7fad1d0542e =
 	"329": {"cls":"enemy48","id":"bearRight"},
 	"330": {"cls":"enemy48","id":"bearUp"},
 	"331": {"cls":"items","id":"I331"},
-	"332": {"cls":"items","id":"I332"},
+	"332": {"cls":"items","id":"scroll"},
 	"333": {"cls":"items","id":"I333"},
 	"334": {"cls":"items","id":"I334"},
 	"335": {"cls":"items","id":"I335"},
@@ -241,5 +241,7 @@ var maps_90f36752_8815_4be8_b32b_d7fad1d0542e =
 	"343": {"cls":"enemys","id":"bleedSlime"},
 	"344": {"cls":"enemys","id":"mirrorVat"},
 	"345": {"cls":"enemys","id":"glueMon"},
+	"346": {"cls":"enemy48","id":"arrowGuard"},
+	"347": {"cls":"enemy48","id":"DireGuard"},
 	"60000": {"cls":"tileset","id":"X60000","canPass":true}
 }

@@ -14,7 +14,8 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"MT6",
 			"MT7",
 			"MT8",
-			"MT9"
+			"MT9",
+			"MT10"
 		],
 		"floorPartitions": [],
 		"images": [
@@ -589,122 +590,51 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		],
 		"shops": [
 			{
-				"id": "shop1",
-				"text": "\t[贪婪之神,moneyShop]勇敢的武士啊, 给我${20+2*flag:shop1}金币就可以：",
-				"textInList": "1F金币商店",
-				"mustEnable": false,
-				"disablePreview": false,
-				"choices": [
-					{
-						"text": "生命+800",
-						"need": "status:money>=20+2*flag:shop1",
-						"action": [
-							{
-								"type": "comment",
-								"text": "新版商店中需要手动扣减金币和增加访问次数"
-							},
-							{
-								"type": "setValue",
-								"name": "status:money",
-								"operator": "-=",
-								"value": "20+2*flag:shop1"
-							},
-							{
-								"type": "setValue",
-								"name": "flag:shop1",
-								"operator": "+=",
-								"value": "1"
-							},
-							{
-								"type": "setValue",
-								"name": "status:hp",
-								"operator": "+=",
-								"value": "800"
-							}
-						]
-					},
-					{
-						"text": "攻击+4",
-						"need": "status:money>=20+2*flag:shop1",
-						"action": [
-							{
-								"type": "comment",
-								"text": "新版商店中需要手动扣减金币和增加访问次数"
-							},
-							{
-								"type": "setValue",
-								"name": "status:money",
-								"operator": "-=",
-								"value": "20+2*flag:shop1"
-							},
-							{
-								"type": "setValue",
-								"name": "flag:shop1",
-								"operator": "+=",
-								"value": "1"
-							},
-							{
-								"type": "setValue",
-								"name": "status:atk",
-								"operator": "+=",
-								"value": "4"
-							}
-						]
-					}
-				]
-			},
-			{
-				"id": "shop2",
-				"text": "\t[贪婪之神,expShop]勇敢的武士啊, 给我一定经验就可以：",
-				"textInList": "1F经验商店",
+				"id": "antiDemonRecords",
+				"text": "\t[灭妖录,scroll]当前经验：\\i[exp]${core.status.hero.exp}",
+				"textInList": "灭妖录",
 				"mustEnable": false,
 				"disablePreview": true,
 				"choices": [
 					{
-						"text": "等级+1（100经验）",
-						"need": "status:exp>=100",
+						"text": "灭妖心得",
+						"need": "true",
+						"condition": "true",
 						"action": [
 							{
-								"type": "setValue",
-								"name": "status:exp",
-								"operator": "-=",
-								"value": "100"
-							},
+								"type": "if",
+								"condition": "flag:taarikh==0",
+								"true": [
+									"现在还不能加点！",
+									{
+										"type": "continue",
+										"n": 1
+									}
+								]
+							}
+						]
+					},
+					{
+						"text": "灭妖日志",
+						"need": "true",
+						"condition": "true",
+						"action": [
 							{
-								"type": "setValue",
-								"name": "status:lv",
-								"operator": "+=",
-								"value": "1"
-							},
-							{
-								"type": "setValue",
-								"name": "status:hp",
-								"operator": "+=",
-								"value": "1000"
+								"type": "choices",
+								"text": "\t[灭妖日志,book]记录神人战胜妖派的壮举\n（选择章节查看）",
+								"choices": [
+									{
+										"text": "报劣质鞋之仇",
+										"icon": "charShoe",
+										"action": [
+											"那妖派鞋贩子，乘人之危，竟敢强买强卖劣质鞋，导致我足裂！\n\\d\r[red]既使我足裂，宁教他头全？\r\\d\n本人的足已经痊愈，是时候找到他报仇了！"
+										]
+									}
+								]
 							}
 						]
 					}
 				]
-			},
-			{
-				"id": "itemShop",
-				"item": true,
-				"textInList": "道具商店",
-				"mustEnable": false,
-				"choices": [
-					{
-						"id": "yellowKey",
-						"number": 10,
-						"money": "10",
-						"sell": "5"
-					}
-				]
-			},
-			{
-				"id": "keyShop",
-				"textInList": "回收钥匙商店",
-				"mustEnable": false,
-				"commonEvent": "回收钥匙商店"
 			}
 		],
 		"levelUp": [

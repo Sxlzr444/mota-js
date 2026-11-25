@@ -180,6 +180,19 @@ main.floors.MT5=
             },
             "\t[神人]神人神奇不可战胜！",
             "\t[神人]要是让我再遇到那妖派奸商，他的结局和这小蝙蝠一样！",
+            "获得 \\i[exp]+10 ！\n（提示：本塔中大多数怪物不掉落经验，经验只在完成剧情或击败关键敌人后获得）",
+            {
+                "type": "setValue",
+                "name": "status:exp",
+                "operator": "+=",
+                "value": "10"
+            },
+            "解锁\\i[scroll]灭妖录！【快捷键：V】\n（选择“灭妖心得”加点，选择“灭妖日志”查看已完成的游戏剧情。）",
+            {
+                "type": "openShop",
+                "id": "antiDemonRecords",
+                "open": true
+            },
             {
                 "type": "autoSave"
             }

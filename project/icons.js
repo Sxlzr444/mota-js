@@ -210,7 +210,9 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"bearDown": 4,
 		"bearLeft": 5,
 		"bearRight": 6,
-		"bearUp": 7
+		"bearUp": 7,
+		"arrowGuard": 8,
+		"DireGuard": 9
 	},
 	"items": {
 		"yellowKey": 0,
@@ -266,7 +268,6 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"pack": 46,
 		"charShoe": 62,
 		"I331": 5,
-		"I332": 7,
 		"I333": 26,
 		"I334": 31,
 		"I335": 32,
@@ -276,7 +277,8 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"I339": 37,
 		"I340": 38,
 		"I341": 39,
-		"iodineBottle": 63
+		"iodineBottle": 63,
+		"scroll": 7
 	},
 	"autotile": {
 		"autotile": 0,
