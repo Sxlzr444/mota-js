@@ -823,7 +823,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				atk: core.getRealStatusOrDefault(heroData, 'atk'),
 				def: core.getRealStatusOrDefault(heroData, 'def'),
 				mdef: core.getRealStatusOrDefault(heroData, 'mdef'),
-				bleed: core.plugin.bleed.clone(), // 模拟用的 bleed 副本，所有流血读写只作用于副本，不碰存档
+				bleed: core.plugin?.bleed.clone(), // 模拟用的 bleed 副本，所有流血读写只作用于副本，不碰存档
 			};
 
 			// 勇士的负属性都按0计算
@@ -909,7 +909,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				def: mon.def,
 				hp: mon.hp,
 				piece: mon.piece,
-				nextHp: mon.nextHp ?? mon.hp,//怪物战前要扣减hp时，这个值为扣减后的真实hp。
+				special: mon.special,
+				nextHp: mon.nextHp ?? mon.hp, //怪物战前要扣减hp时，这个值为扣减后的真实hp。
 			};
 			/** 本回合中临时有效的玩家属性。 */
 			let heroInTurn = {
@@ -924,7 +925,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				def: monInCombat.def,
 				hp: monInCombat.hp,
 				piece: monInCombat.piece,
-				nextHp: monInCombat.nextHp??monInCombat.hp,//怪物战前要扣减hp时，这个值为扣减后的真实hp。
+				special: mon.special,
+				nextHp: monInCombat.nextHp ?? monInCombat.hp, //怪物战前要扣减hp时，这个值为扣减后的真实hp。
 			};
 			/** 怪物对勇士造成的总伤害（返回值）。 */
 			let damage = 0;
@@ -1102,14 +1104,28 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	
 			};
 
-			// 怪物技能——尖刺：调用先攻造成的伤害作为流血的每回合伤害
-			/** 尖刺的回合伤害，初始为 0 */
-			let spireTurnDealt = 0;
-			
 			/** 计算玩家当前回合对怪物造成的伤害。 */
-			//let calTurnDeal = () => {
-			//	return null;
-			//}
+			let calTurnDeal = (heroInTurn, monInTurn) => {
+				/** 玩家在当前回合将要造成的伤害。 */
+				let deal = minusP(heroInTurn.atk, monInTurn.def);
+
+				// 怪物技能——坚韧，百分比减少怪物受到的伤害
+				if (core.hasSpecial(monInTurn.special,5005)) {
+					// 数据按百分数填写（30 表示 30%），在此换算成 0~1 的削减比例
+					let reducePer = (enemyData.damegeReducePer ?? enemyData.value ?? 0)/100;
+					// 削减结果向下取整
+					deal = perReduce(deal, reducePer);
+				}
+
+				// 怪物技能——嗜血，获得临时生命值（坚韧已向下取整，此处也取整即可）
+				if (core.hasSpecial(monInTurn.special,5004)) {
+					/** @type {number} 嗜血怪物于回合中获取的临时属性，数值等同于本回合玩家受到的流血伤害。 */
+					let vampValue = hero.bleed.nextTurnDealt ?? 0;
+					deal = minusP(deal, vampValue);
+				}
+
+				return deal;
+			}
 
 			// 无敌
 			if (core.hasSpecial(mon.special, 20) && core.itemCount('cross') < 1) {
@@ -1175,6 +1191,10 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			}
 			*/
 
+			// 怪物技能——尖刺：调用先攻造成的伤害作为流血的每回合伤害
+			/** 尖刺的回合伤害，初始为 0 */
+			let spireTurnDealt = 0;
+
 			// 怪物技能——先攻：在勇士第一次攻击前结算。
 			if (core.hasSpecial(mon.special, 1)) {
 				let firstStrike = calTurnDealt();
@@ -1210,7 +1230,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			damage += initDealt;
 
 			// 玩家每回合对怪物造成的伤害，以及怪物每回合对玩家造成的伤害。
-			let heroDealOfThisTurn = 0;
+			// let heroDealOfThisTurn = 0;
 			let heroDealtOfThisTurn = 0;
 
 			// 正式进入战斗回合。
@@ -1229,30 +1249,6 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 				/** @type {number} 嗜血怪物于回合中获取的临时属性，数值等同于本回合玩家受到的流血伤害。 */
 				let vampValue = hero.bleed.nextTurnDealt ?? 0;
 
-				// 回合一开始，令玩家受到dot伤害；流血状态的推进只发生在 hero.bleed 副本上
-				applyExtraDamage();
-
-				/** 玩家在当前回合将要造成的伤害。 */
-				heroDealOfThisTurn = minusP(heroInTurn.atk, monInTurn.def);
-
-				// 怪物技能——坚韧，百分比减少怪物受到的伤害
-				if (core.hasSpecial(mon.special,5005)) {
-					// 数据按百分数填写（30 表示 30%），在此换算成 0~1 的削减比例
-					let reducePer = (enemyData.damegeReducePer ?? enemyData.value ?? 0)/100;
-					// 削减结果向下取整
-					heroDealOfThisTurn = perReduce(heroDealOfThisTurn, reducePer);
-				}
-
-				// 怪物技能——嗜血，获得临时生命值（坚韧已向下取整，此处也取整即可）
-				if (core.hasSpecial(mon.special,5004)) heroDealOfThisTurn = minusP(heroDealOfThisTurn, vampValue);
-
-				// 未能破防则累计无法破防回合，否则重置计数。
-				if (heroDealOfThisTurn <= 0) {
-					noDamageTurns += 1;
-				} else {
-					noDamageTurns = 0;
-				}
-
 				/**
 				* 哈气技能结算的一部分
 				* 在玩家正式攻击怪物前，表示当前生命值相当于多少个“最大生命值的 25%”档位。
@@ -1260,9 +1256,24 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
  				*/
 				let quarters = Math.ceil(4*monInCombat.hp/mon.hp);
 
+				/** 调用 calTurnDeal() 计算玩家对怪物造成的伤害 */
+				let heroDeal = calTurnDeal(heroInTurn, monInTurn);
+
+				// 未能破防则累计无法破防回合，否则重置计数。
+				if (heroDeal <= 0) {
+					noDamageTurns += 1;
+				} else {
+					noDamageTurns = 0;
+				}
+
 				// 玩家正式攻击怪物
-				monInCombat.hp -= heroDealOfThisTurn;
+				monInCombat.hp -= heroDeal;
+
+				// 玩家攻击后，令玩家受到dot伤害；流血状态的推进只发生在 hero.bleed 副本上
+				applyExtraDamage();
+
 				// 怪物被击败时：
+				// 结算怪物死亡/脱战/重生等效果
 				if (monInCombat.hp <= 0) {
 					// 怪物技能——双生：如果处于双生阶段，则只死亡一只怪物，另一只仍然可以战斗，不结束战斗
 					if(twinActived==true){
