@@ -191,20 +191,54 @@ loader.prototype._loadTilesets_sync = function (callback) {
     core.material.images.tilesets = {};
     this._setStartLoadTipText("正在加载额外素材...");
     this.loadImages("tilesets", core.tilesets, core.material.images.tilesets, function () {
-        core.loader._loadTilesets_afterLoad();
-        callback();
+        core.loader._loadTilesets_afterLoad(callback);
     });
 }
 
 loader.prototype._loadTilesets_async = function (onprogress, onfinished) {
     core.material.images.tilesets = {};
     this.loadImagesFromZip('project/tilesets/tilesets.h5data', core.tilesets, core.material.images.tilesets, onprogress, function () {
-        core.loader._loadTilesets_afterLoad();
-        onfinished();
+        core.loader._loadTilesets_afterLoad(onfinished);
     });
 }
 
-loader.prototype._loadTilesets_afterLoad = function () {
+loader.prototype._loadTilesets_afterLoad = function (callback) {
+    callback = callback || function () { };
+
+    // 资源包中可能缺失某些图块集（例如发布时该素材没有被一起打包），
+    // 这里对缺失的图块集尝试直接按 png 兜底加载，避免进入游戏时直接报错。
+    var missing = [];
+    (core.tilesets || []).forEach(function (imgName) {
+        if (!core.material.images.tilesets[imgName]) missing.push(imgName);
+    });
+
+    if (missing.length == 0) {
+        core.loader._checkTilesetsSize();
+        callback();
+        return;
+    }
+
+    var items = 0;
+    missing.forEach(function (imgName) {
+        core.loader.loadImage('tilesets', imgName, function (name, image) {
+            if (image != null) {
+                core.material.images.tilesets[name] = image;
+                console.warn('[素材缺失] 图块集 ' + name + ' 未包含在资源包中，已改为直接加载 png 兜底。' +
+                    '建议将它登记在全塔属性的 tilesets 列表后再重新发布。');
+            } else {
+                console.error('[素材缺失] 图块集 ' + name + ' 加载失败，该图块集对应的地图编号会显示为空白。' +
+                    '请确认 project/tilesets/' + name + ' 存在，并已登记到全塔属性的 tilesets 列表中。');
+            }
+            items++;
+            if (items == missing.length) {
+                core.loader._checkTilesetsSize();
+                callback();
+            }
+        });
+    });
+}
+
+loader.prototype._checkTilesetsSize = function () {
     // 检查宽高是32倍数，如果出错在控制台报错
     for (var imgName in core.material.images.tilesets) {
         var img = core.material.images.tilesets[imgName];

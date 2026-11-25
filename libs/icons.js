@@ -70,6 +70,15 @@ icons.prototype.getTilesetOffset = function (id) {
     for (var i in core.tilesets) {
         var imgName = core.tilesets[i];
         var img = core.material.images.tilesets[imgName];
+        if (!img) {
+            // 图片未能加载（例如发布后素材没有被一起打包）时直接跳过该图块集，
+            // 避免图片的缺失导致整张地图加载失败、游戏无法开始。
+            if (window.console) {
+                console.warn('[素材缺失] 图块集图片未加载：' + imgName + '，对应编号段将被跳过。');
+            }
+            startOffset += this.tilesetStartOffset;
+            continue;
+        }
         var tileHeight = this.getTilesetHeight(imgName);
         var width = Math.floor(parseInt(img.getAttribute('_width')) / 32), height = Math.floor(parseInt(img.getAttribute('_height')) / tileHeight);
         if (id >= startOffset && id < startOffset + width * height) {
