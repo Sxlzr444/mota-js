@@ -668,6 +668,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 					/** 尖刺造成的流血回合数，从怪物属性 enemy.spireTurns 中读取 */
     				let turns = enemy.spireTurns ?? enemy.value ?? 0;
 				    return "战斗后怪物对玩家造成" + turns + "回合的流血伤害，每回合造成" + dealt + "点伤害（等同于怪物1回合对玩家造成的伤害）。";}, "#a0522d"],
+				[5007, "穿刺", function (enemy) { return "怪物无视玩家" + (enemy.piece ?? enemy.value ?? 0) + "%的防御力（结果向下取整）。"; }, "#3838f1"],
 				[11001, "扣税", function (enemy) { return "经过怪物周围" + (enemy.zoneSquare ? "九宫格" : "十字") + "时需要缴纳" + (enemy.tax ?? 10) + "金币，同时怪物后退一格，如无法缴纳则你死亡。"; }, "#ffdd55"],
 			];
 		},
@@ -889,6 +890,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			/** 怪物的穿刺比例，用于计算魔攻等效果。 */
 			mon.piece = 0;
 			
+			//怪物技能-穿刺：穿刺比例增加 enemyData.piece 或 enemyData.value %
+			if(core.hasSpecial(mon.special, 5007)) mon.piece += (enemyData.piece ?? enemyData.value ?? 0) / 100;
+
 			//怪物技能-魔攻：穿刺比例增加100%
 			if(core.hasSpecial(mon.special, 2)){
 				mon.piece+=1;
