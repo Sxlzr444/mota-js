@@ -98,23 +98,6 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		},
 		"levelChoose": [
 			{
-				"title": "简单",
-				"name": "Easy",
-				"hard": 1,
-				"color": [
-					64,
-					255,
-					85,
-					1
-				],
-				"action": [
-					{
-						"type": "comment",
-						"text": "在这里写该难度需执行的事件"
-					}
-				]
-			},
-			{
 				"title": "普通",
 				"name": "Normal",
 				"hard": 2,
@@ -122,18 +105,6 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 					255,
 					221,
 					32,
-					1
-				],
-				"action": []
-			},
-			{
-				"title": "困难",
-				"name": "Hard",
-				"hard": 3,
-				"color": [
-					255,
-					68,
-					64,
 					1
 				],
 				"action": []
@@ -183,8 +154,8 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		]
 	},
 	"firstData": {
-		"title": "魔塔样板",
-		"name": "template",
+		"title": "神人灭妖记",
+		"name": "Records_of_Anti_Demons",
 		"version": "Ver 2.10.3",
 		"floorId": "MT1",
 		"hero": {
@@ -584,9 +555,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 				"type": "setValue",
 				"name": "item:fly",
 				"value": "1"
-			},
-			"Hi，欢迎来到 HTML5 魔塔样板！\n\n本样板由艾之葵制作，可以让你在不会写任何代码\n的情况下也能做出属于自己的H5魔塔！",
-			"这里游戏开始时的剧情。\n\n你可以在这里写上自己的内容。\n赶快来试一试吧！"
+			}
 		],
 		"shops": [
 			{
